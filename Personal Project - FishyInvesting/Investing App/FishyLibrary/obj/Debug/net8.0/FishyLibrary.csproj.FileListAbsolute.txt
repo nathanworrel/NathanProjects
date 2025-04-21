@@ -1,0 +1,13 @@
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/bin/Debug/net8.0/FishyLibrary.deps.json
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/bin/Debug/net8.0/FishyLibrary.dll
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/bin/Debug/net8.0/FishyLibrary.pdb
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.csproj.AssemblyReference.cache
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.GeneratedMSBuildEditorConfig.editorconfig
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.AssemblyInfoInputs.cache
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.AssemblyInfo.cs
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.csproj.CoreCompileInputs.cache
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.sourcelink.json
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.dll
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/refint/FishyLibrary.dll
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/FishyLibrary.pdb
+/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyLibrary/obj/Debug/net8.0/ref/FishyLibrary.dll

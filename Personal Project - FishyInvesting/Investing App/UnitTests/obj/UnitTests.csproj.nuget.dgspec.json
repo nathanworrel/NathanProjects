@@ -1,0 +1,748 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/UnitTests/UnitTests.csproj": {}
+  },
+  "projects": {
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj",
+        "projectName": "CommonServices",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Autofac": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[9.0.0-rc.2.24473.5, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
+        "projectName": "FishyBacktesty",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "MudBlazor": {
+              "target": "Package",
+              "version": "[7.*, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "YahooFinanceApi": {
+              "target": "Package",
+              "version": "[2.3.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj",
+        "projectName": "FishyLibrary",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Autofac": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Autofac.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[9.0.0-preview.6.24327.7, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[9.0.0-rc.2.24473.5, )"
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[8.0.3, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
+            "RichardSzalay.MockHttp": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "YahooFinanceApi": {
+              "target": "Package",
+              "version": "[2.3.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/UnitTests/UnitTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/UnitTests/UnitTests.csproj",
+        "projectName": "UnitTests",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/UnitTests/UnitTests.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/UnitTests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/WebApi.DB.Access.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/WebApi.DB.Access.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/WebApi.MakeTrade.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/WebApi.MakeTrade.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/WebApi.UpdateTrades.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/WebApi.UpdateTrades.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.8.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "RichardSzalay.MockHttp": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Testcontainers.PostgreSql": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/WebApi.DB.Access.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/WebApi.DB.Access.csproj",
+        "projectName": "WebApi.DB.Access",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/WebApi.DB.Access.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.DB.Access/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Autofac": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Autofac.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.AspNet.WebApi.Cors": {
+              "target": "Package",
+              "version": "[5.3.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/WebApi.MakeTrade.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/WebApi.MakeTrade.csproj",
+        "projectName": "WebApi.MakeTrade",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/WebApi.MakeTrade.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.MakeTrade/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Autofac": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Autofac.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/WebApi.UpdateTrades.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/WebApi.UpdateTrades.csproj",
+        "projectName": "WebApi.UpdateTrades",
+        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/WebApi.UpdateTrades.csproj",
+        "packagesPath": "/home/nathanielworrel/.nuget/packages/",
+        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/WebApi.UpdateTrades/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj"
+              },
+              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Autofac": {
+              "target": "Package",
+              "version": "[8.2.0, )"
+            },
+            "Autofac.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[9.0.2, )"
+            },
+            "Seq.Extensions.Logging": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "Serilog.Sinks.Seq": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/home/nathanielworrel/.dotnet/sdk/8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

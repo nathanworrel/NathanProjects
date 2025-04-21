@@ -1,0 +1,32 @@
+@page "/HistoricalData"
+<h3>HistoricalData</h3>
+
+<MudTextField @bind-Value="Symbol" Label="Stock" Variant="Variant.Outlined"></MudTextField>
+<MudGrid>
+    <MudItem xs="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudStack>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@GetDateRanges">Date Range</MudButton>
+                <MudStack Row="true">
+                    <MudText>Start</MudText>
+                    @if (@DateRanges is not null)
+                    {
+                        <MudTextField @bind-Value="DateRanges.Start"></MudTextField>
+                    }
+                </MudStack>
+                <MudStack Row="true">
+                    <MudText>End</MudText>
+                    @if (@DateRanges is not null)
+                    {
+                        <MudTextField @bind-Value="DateRanges.End">End</MudTextField>
+                    }
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="6">
+        <MudPaper Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@AddDateRanges">Get More Data</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>

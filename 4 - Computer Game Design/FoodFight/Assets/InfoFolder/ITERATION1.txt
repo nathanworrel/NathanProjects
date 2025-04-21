@@ -1,0 +1,14 @@
+In the inital playtest session we ran into a few problems.
+a small list is here:
+    1-Players didn't know to add another player
+    2-Players Stayed in the center the entire time   
+    3-Players didn't understand the mechanics
+    4-players didnt know when they died/hurt
+
+We focused on these four things plus analytics
+
+to fix these things we:
+    1-Modified the menus to show a "press a button to add player 2" along with making the menus. Additaionally adding a pause menu with the hash button for player convenience
+    2-Players stayed in the center so we added collectables around the map to make them spread out when hurt
+    3-We put a rock paper sizors icon above the player to show how the different moves are intended to interact. Also a small display to show how the functions worked
+    4-we added a hit particle effect and also made a death animation so that the player knew that they died

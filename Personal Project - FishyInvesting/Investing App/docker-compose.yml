@@ -1,0 +1,192 @@
+﻿services:
+  db:
+    image: postgres:16
+    user: 1
+    restart: always
+    ports:
+      - "1:1"
+    environment:
+      POSTGRES_DB: fishydb
+      POSTGRES_USER: 1
+      POSTGRES_PASSWORD: 1
+      POSTGRES_ROOT_PASSWORD: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./insert.sql:/docker-entrypoint-initdb.d/insert.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+      
+  dev-db:
+    image: postgres:16
+    user: 1
+    restart: always
+    ports:
+      - "1:1"
+    environment:
+      POSTGRES_DB: dev-fishydb
+      POSTGRES_USER: 1
+      POSTGRES_PASSWORD: 1
+      POSTGRES_ROOT_PASSWORD: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./insert-dev.sql:/docker-entrypoint-initdb.d/insert-dev.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+
+  logs:
+    image: datalust/seq:latest
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y" #Accepts the Seq End User License Agreement
+    ports:
+      - "1:1" # Exposes the Seq web interface on port 1
+      - "1:1" # Exposes the Seq ingestion port on 1
+    volumes:
+      - seq_data:/data
+
+
+  charles-schwab:
+    image: charlesschwab
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    environment:
+      - DISPLAY=:99  # Set the display for headless mode
+      - SELENIUM_HEADLESS=true  # Ensure Selenium runs in headless mode
+    build:
+      context: .
+      dockerfile: WebApi.Brokers.CharlesSchwab/Dockerfile
+    volumes:
+      - /dev/shm:/dev/shm 
+  
+  make-trade:
+    image: maketrade
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.MakeTrade/Dockerfile
+
+  get-data:
+    image: getdata
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.GetData/Dockerfile
+      
+  strategy-service:
+    image: strategyservice
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.StrategyService/Dockerfile
+      
+  scheduler:
+    image: scheduler
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      strategy-service:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.Scheduler/Dockerfile
+  
+  update-trades:
+    image: updatetrades
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.UpdateTrades/Dockerfile
+      
+  strategy-runner:
+    image: strategyrunner
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      get-data:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+      update-trades:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: Svc.StrategyRunner/Dockerfile
+      
+      
+  db-access:
+    image: dbaccess
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    build:
+      context: .
+      dockerfile: WebApi.DB.Access/Dockerfile 
+
+volumes:
+  postgres_data:
+    
+  seq_data:

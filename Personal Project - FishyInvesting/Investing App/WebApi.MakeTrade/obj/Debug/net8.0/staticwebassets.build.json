@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "/53IVmmgGVmSWN7A+gX7+jgARya3G9/LppsO8i/mYfQ=",
+  "Source": "WebApi.MakeTrade",
+  "BasePath": "_content/WebApi.MakeTrade",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,13 @@
+The Major problems that we discovered in the last playtesting session:
+    There was a spammy aspect to the attack
+    Players would run around collecting health and you couldn't catch them
+    Players also wouldn't use the powerups as much as intended
+    Juice and throwable item
+
+How we fixed them over the last week:
+    Added a stamina bar to give the game more strategy
+    Used the stamina and added a sprint meter to allow for more movement
+    Added 4 additional powerups and placed them around the map
+    Added a throwable item to the game
+    Added additional particle affects
+    Bug fixes so you cant climb up the walls and more

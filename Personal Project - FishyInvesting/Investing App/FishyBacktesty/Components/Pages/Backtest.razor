@@ -1,0 +1,103 @@
+@page "/Backtest"
+@using FishyBacktesty.Models
+
+<h3>Backtest</h3>
+
+<MudSelect @bind-Value="@SelectedStrategyName" Label="Strategy">
+    @foreach (var strategy in @StrategieNames)
+    {
+        <MudSelectItem Value="@strategy">@strategy</MudSelectItem>
+    }
+</MudSelect>
+@foreach (var product in Products)
+{
+    <MudTextField @bind-Value="@product.Product" Label="Stock Symbol" Variant="Variant.Outlined"></MudTextField>
+}
+<MudTimePicker Editable="true" AmPm="false" @bind-Time="TimeOfDay" Label="TimeOfDay" Variant="Variant.Outlined"/>
+<MudDatePicker Editable="true" @bind-Date="StartDate" Label="StartDate" Variant="Variant.Outlined"></MudDatePicker>
+@foreach (var rangedParam in @RangedParameters)
+{
+    <MudStack Style="padding-top: 10px" Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexStart" Spacing="4">
+        <MudPaper Class="width-50">
+            <MudText>@rangedParam.Name</MudText>
+        </MudPaper>
+        <MudPaper Class="width-50">
+            <MudNumericField @bind-Value="@rangedParam.StartingValue" Label="Starting Value" Variant="Variant.Text"/>
+        </MudPaper>
+        <MudPaper Class="width-50">
+            <MudNumericField @bind-Value="@rangedParam.EndingValue" Label="Ending Value" Variant="Variant.Text"/>
+        </MudPaper>
+        <MudPaper Class="width-50">
+            <MudNumericField @bind-Value="@rangedParam.StepSize" Label="Step Size" Variant="Variant.Text"/>
+        </MudPaper>
+    </MudStack>
+}
+<MudNumericField @bind-Value="@DaysReduced" Label="Initial Load Period" Variant="Variant.Text"/>
+<MudText>Note: To see all combinations, keep NumSplits = 0</MudText>
+<MudNumericField @bind-Value="@NumSplits" Label="Num Splits" Variant="Variant.Text"/>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@RunBacktest">Run</MudButton>
+
+<MudTable Items="@Efficiencies" Hover="true" SortLabel="Sort By" Elevation="0"
+          MultiSelection="true"
+          @bind-SelectedItems="@SelectedBacktests"
+          T="EarningBacktest"
+          SelectionChanged="@OnSelectionChanged">
+    <HeaderContent>
+        @foreach (var param in _selectedStrategy.Parameters.GetParameters())
+        {
+            <MudTh>
+                @param.Key
+            </MudTh>
+        }
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.MostRecentSplit)">Most Recent Split</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.AvgMthRtns)">Avg Monthly Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.AvgYrRtns)">Avg Yearly Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.EstYrRtns)">Est Yearly Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.TotalRtns)">Total Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.BestYrRtn)">Best Year Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.WorstYrRtn)">Worst Year Return</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.BestMthRtn)">Best Month Returns</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<EarningBacktest, object>(x => x.WorstMthRtn)">Worst Month Return</MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        @foreach (var param in @context.Parameters.GetParameters())
+        {
+            <MudTd DataLabel="@param.Key">@param.Value</MudTd>
+        }
+        <MudTd DataLabel="Most Recent Split">@context.MostRecentSplit</MudTd>
+        <MudTd DataLabel="Avg Monthly Returns">@context.AvgMthRtns</MudTd>
+        <MudTd DataLabel="Avg Yearly Returns">@context.AvgYrRtns</MudTd>
+        <MudTd DataLabel="Est Yearly Returns">@context.EstYrRtns</MudTd>
+        <MudTd DataLabel="Total Returns">@context.TotalRtns</MudTd>
+        <MudTd DataLabel="Best Year Return">@context.BestYrRtn</MudTd>
+        <MudTd DataLabel="Worst Year Return">@context.WorstYrRtn</MudTd>
+        <MudTd DataLabel="Best Month Return">@context.BestMthRtn</MudTd>
+        <MudTd DataLabel="Worst Month Return">@context.WorstMthRtn</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+@if (@SelectedBacktests.Count > 0)
+{
+    <MudButton Variant="Variant.Filled" OnClick="@AddParamsToDb">Add Selected Parameters To Database</MudButton>
+    <MudChart ChartType="ChartType.Line" ChartSeries="@BacktestCharts" XAxisLabels="@TimeRange" Width="100%" Height="350px" ChartOptions="@ChartOptions"/>
+}

@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "ktYv5myLhOt0rff4cwnSBFpJFTPKDDESUYeWEFx2jKw=",
+  "Source": "WebApi.Brokers.CharlesSchwab",
+  "BasePath": "_content/WebApi.Brokers.CharlesSchwab",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

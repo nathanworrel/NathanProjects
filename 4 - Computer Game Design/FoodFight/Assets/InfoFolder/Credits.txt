@@ -1,0 +1,53 @@
+First Person Camera
+- https://github.com/lukeskt/InputSystemFirstPersonCharacter/blob/main/InputSystemFirstPersonCharacterScripts/InputSystemFirstPersonCharacter.cs for camera movement
+
+Split Screen code used from this video and this github below
+- Video: https://www.youtube.com/watch?v=l9HrraxtdGY (by One Wheel Studio)
+- Github: https://github.com/onewheelstudio/Adventures-in-C-Sharp/tree/main/Split%20Screen (by One Wheel Studio) 
+    - Specifically the files "ToggleOnPlayerJoin.cs" and "PlayerManager.cs"
+
+Controller Shake
+- Video: https://www.youtube.com/watch?v=WSw82nKXibc
+- Github: https://github.com/Srfigie/UnityInputSystem_ControlerRumble
+- Liscense: MIT
+
+Images
+- food_background: https://pixabay.com/photos/mediterranean-cuisine-eat-food-2378758/
+   - Creator: lukasbieri
+   - Pixabay License
+
+3d Assets/Textures
+https://opengameart.org/content/3d-furniture-pack-new Author:mehrasaur Liscense:CC0
+https://assetstore.unity.com/packages/2d/textures-materials/tiles/pbr-tile-texture-floor-36243 Author:randomse License:Extension Asset
+https://assetstore.unity.com/packages/2d/textures-materials/brick/sand-brick-texture-115071 Author:ShMEL Studio License:Extension Asset
+https://assetstore.unity.com/packages/2d/textures-materials/wood/hand-painted-seamless-wood-texture-vol-6-162145 Author: Innovana Games License:Extension Asset
+https://assetstore.unity.com/packages/3d/props/exterior/low-poly-pack-environment-lite-102039 Author: Solum Night Liscense:Extension Asset
+
+Sounds
+- oof_sound: https://freesound.org/people/xtrgamr/sounds/257780/
+   - Creator: xtrgamr
+- airport_lounge (title screen music): https://freesound.org/people/code_box/sounds/651533/
+   - Creator: code_box
+- wt_splat: https://freesound.org/people/JustInvoke/sounds/446115/
+   - Creator: JustInvoke
+- poke_sound: https://freesound.org/people/InspectorJ/sounds/420877/
+   - Creator: InspectorJ
+- refreshing_sound: https://freesound.org/people/guichegancas/sounds/392335/
+   - Creator: guichegancas
+- bamboo_swing: https://freesound.org/people/InspectorJ/sounds/394419/
+   - Creator: InspectorJ
+- battle_music: Freelance student from Michigan
+   - Creator: Abigail Labbe
+- lobby-music-1: Freelance student from Michigan
+   - Creator: Abigail Labbe
+- Video-Game-Unlock-Sound-A1-8bit: https://www.fesliyanstudios.com/royalty-free-sound-effects-download/spells-and-power-ups-217
+   - Creator: David Fesliyan
+
+Stamina
+- Building the stamina system: https://answers.unity.com/questions/1367526/stamina-delay-c-script.html
+
+Health/Stamina Bar
+- https://weeklyhow.com/how-to-make-a-health-bar-in-unity/
+
+Title Screen
+- Emily Albright
