@@ -10,14 +10,14 @@ The course numbering follows a loose structure:
 - Courses in the **3s** indicate *junior-level* classes 
 - Courses in the **4s** indicate *senior-level* classes 
 
-I’ve intentionally excluded introductory (100-level) and most sophomore-level projects, as I was fortunate to place out of the former and no longer feel the latter reflect my current abilities as a developer. To keep things concise and relevant, I’ve also curated my project list to highlight work that best aligns with my current skills and aspirations.
+I’ve intentionally excluded introductory (1s) and sophomore-level projects(2s), as I feel they no longer feel reflect my current abilities as a developer. To keep things concise and relevant, I’ve also curated my project list to highlight work that best aligns with my current skills and aspirations.
 
 ### 💡 How to Navigate the Projects
 
-I recommend opening the projects in an integrated development environment (IDE) to best explore and understand the code. 
+I recommend opening the projects in an IDE like Intellij or VSCode to best explore and understand the code. 
 Some include the original problem statements, while others feature recreated documentation I wrote to help explain the purpose and goals of the work.
 
-You'll also find a **personal project** included in a trimmed-down form. This version showcases my current coding practices and development workflow. Sensitive elements (such as secrets or private logic) have been removed for privacy and security.
+You'll also find my **Automated Stock Trading Personal Project** included in a trimmed-down format. This version showcases my current coding practices and development workflow. Sensitive elements (such as secrets or private logic) have been removed for privacy and security.
 
 ---
 
