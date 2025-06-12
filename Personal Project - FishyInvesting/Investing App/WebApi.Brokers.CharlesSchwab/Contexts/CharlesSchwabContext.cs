@@ -2,6 +2,7 @@ using FishyLibrary;
 using FishyLibrary.Models.MarketTime;
 using FishyLibrary.Models.Parameters;
 using FishyLibrary.Models.Strategy;
+using FishyLibrary.Models.Client;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApi.Template.Models;
@@ -12,7 +13,7 @@ namespace WebApi.Template.Contexts;
 public class CharlesSchwabContext : DbContext
 {
     public DbSet<AuthToken> AuthTokens { get; set; }
-    public DbSet<Users> UsersDatabase { get; set; }
+    public DbSet<Client> Clients { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<MarketTime> MarketTimes { get; set; }
     private IWebHostEnvironment _env;
@@ -26,17 +27,17 @@ public class CharlesSchwabContext : DbContext
     {
         if (!builder.IsConfigured)
         {
-            string host = "127.0.0.1";
+            string host = "localhost";
             int port = 1;
-            string database = "fishydb";
+            string database = "dev-1";
             if (_env != null && !_env.IsDevelopment())
             {
                 
                 host = "db";
                 port = 1;
-                database = "fishydb";
+                database = "1";
             }
-            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=1;Password=1;");
+            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=postgres;Password=1;");
         }
 
         base.OnConfiguring(builder);

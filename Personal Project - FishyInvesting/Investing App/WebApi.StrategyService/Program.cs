@@ -4,6 +4,7 @@ using CommonServices;
 using FishyLibrary;
 using FishyLibrary.Extensions;
 using Serilog;
+using SerilogTracing;
 using WebApi.StrategyService;
 using WebApi.StrategyService.Contexts;
 using WebApi.StrategyService.Services;
@@ -22,6 +23,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddHostedService<UpdateStrategyTypesService>();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSerilogWithSeq();
+_ = new ActivityListenerConfiguration()
+    .TraceToSharedLogger();
 
 // Use Autofac as the DI container
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

@@ -1,16 +1,6 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
-using FishyLibrary.Helpers;
 using FishyLibrary.Models;
-using FishyLibrary.Models.MarketTime;
-using FishyLibrary.Models.Order;
-using MakeTrade.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using WebApi.Template.Models;
 using WebApi.Template.Services;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace WebApi.Template.Controllers;
 
@@ -28,12 +18,12 @@ public class CharlesSchwabController : ControllerBase
     }
 
     [HttpGet($"/SignIn")]
-    public IActionResult SignIn(int userId)
+    public IActionResult SignIn(int clientId)
     {
-        string? accessToken = _charlesSchwabService.ManualSignIn(userId);
+        string? accessToken = _charlesSchwabService.ManualSignIn(clientId);
         if (accessToken == null)
         {
-            _logger.LogError($"Unable to get access token for {userId}");
+            _logger.LogError("Unable to get access token for {clientId}", clientId);
             return Unauthorized();
         }
 
@@ -41,12 +31,12 @@ public class CharlesSchwabController : ControllerBase
     }
 
     [HttpGet($"/AutomaticSignIn")]
-    public IActionResult AutomaticSignIn(int userId)
+    public IActionResult AutomaticSignIn(int clientId)
     {
-        string? accessToken = _charlesSchwabService.AutomaticSignIn(userId);
+        string? accessToken = _charlesSchwabService.AutomaticSignIn(clientId);
         if (accessToken == null)
         {
-            _logger.LogError($"Unable to get access token for {userId}");
+            _logger.LogError("Unable to get access token for {clientId}", clientId);
             return Unauthorized("Unable to get access token");
         }
 
@@ -63,7 +53,7 @@ public class CharlesSchwabController : ControllerBase
         }
         catch (Exception e)
         {
-            _logger.LogError("{}", e);
+            _logger.LogError("Unable to log everyone in with error {error}", e);
             throw;
         }
     }
@@ -73,50 +63,13 @@ public class CharlesSchwabController : ControllerBase
     {
         try
         {
-            _logger.LogInformation($"Recieved trade: {makeTrade} for account: {accountId}");
-
-            Order order = new Order(makeTrade);
-
-            HttpResponseMessage responseMessage = _charlesSchwabService.VerifySendMakeTrade(order, accountId).Result;
-            if (!responseMessage.IsSuccessStatusCode)
+            GenericResponse responseMessage = _charlesSchwabService.PlaceTrade(makeTrade, accountId, dry);
+            if (responseMessage.isSuccess)
             {
-                _logger.LogError("{}", responseMessage);
-                _logger.LogError($"Failed to validate: {order}");
-                return BadRequest(responseMessage);
+                return Ok(responseMessage.Message);
             }
 
-            _logger.LogInformation(
-                $"Verifying order successful for trade: {makeTrade.Side} {makeTrade.Quantity} {makeTrade.Product} at {makeTrade.Price} to account: {accountId}");
-
-            if (dry)
-            {
-                _logger.LogInformation($"Dry run - trade not placed");
-                return Ok();
-            }
-
-            _logger.LogInformation(
-                $"Sending Order {makeTrade.Side} {makeTrade.Quantity} {makeTrade.Product} at {makeTrade.Price} to account: {accountId}");
-
-            HttpResponseMessage response = _charlesSchwabService.SendMakeTrade(order, accountId).Result;
-            _logger.LogInformation($"Sending Order Response: {JsonConvert.SerializeObject(response)}");
-            if (response.IsSuccessStatusCode)
-            {
-                if (response.Headers.TryGetValues("Location", out var values))
-                {
-                    var location = values.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(location))
-                    {
-                        var number = location.Split('/').Last();
-                        _logger.LogInformation(
-                            $"Extracted number: {number} for {makeTrade.Side} {makeTrade.Quantity} {makeTrade.Product} at {makeTrade.Price} to account: {accountId}");
-                        return Ok(number);
-                    }
-                }
-
-                return Ok();
-            }
-
-            return BadRequest(response);
+            return BadRequest(responseMessage.Message);
         }
         catch (Exception e)
         {
@@ -128,24 +81,30 @@ public class CharlesSchwabController : ControllerBase
     [HttpGet("/Orders")]
     public IActionResult Orders(int accountId, string startTime = "12/15/2024")
     {
-        _logger.LogInformation($"Getting orders for {accountId} after {startTime}");
-        var time = DateTime.ParseExact(startTime, @"MM/dd/yyyy", CultureInfo.InvariantCulture);
-        var result = _charlesSchwabService.GetOrders(accountId, time.Date).Result.Content.ReadAsStringAsync().Result;
-        var orders = JsonSerializer.Deserialize<List<OrderData>>(result);
-        return Ok(orders);
+        _logger.LogInformation("Getting orders for {accountId} after {startTime}", accountId, startTime);
+        try
+        {
+            return Ok(_charlesSchwabService.GetOrders(accountId, startTime));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("{}", e);
+            throw;
+        }
     }
 
     [HttpGet("/Order")]
     public IActionResult Order(int accountId, string orderNumber)
     {
-        var result = _charlesSchwabService.GetOrder(accountId, orderNumber).Result.Content.ReadAsStringAsync().Result;
-        var order = JsonSerializer.Deserialize<OrderData>(result);
-        if (order == null)
+        try
         {
-            return BadRequest();
+            return Ok(_charlesSchwabService.GetOrder(accountId, orderNumber));
         }
-
-        return Ok(order);
+        catch (Exception e)
+        {
+            _logger.LogError("{}", e);
+            throw;
+        }
     }
 
     [HttpGet("/CurrentMarketPrice")]
@@ -153,24 +112,7 @@ public class CharlesSchwabController : ControllerBase
     {
         try
         {
-            HttpResponseMessage response = _charlesSchwabService.GetCurrentMarketPrice(accountId, product).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var result = response.Content.ReadAsStringAsync().Result;
-                if (!result.IsNullOrEmpty())
-                {
-                    Match? lastPriceMatch = Regex.Matches(result, @"lastPrice.?.?([0-9.]*)").LastOrDefault();
-                    if (lastPriceMatch is { Success: true })
-                    {
-                        return Ok(lastPriceMatch.Groups[1].Value);
-                    }
-
-                    throw new Exception("No lastPrice match");
-                }
-                throw new Exception("No RESULT");
-            }
-
-            return BadRequest(response);
+            return Ok(_charlesSchwabService.GetCurrentMarketPrice(accountId, product));
         }
         catch (Exception e)
         {
@@ -180,44 +122,31 @@ public class CharlesSchwabController : ControllerBase
     }
 
     [HttpGet("/AccountData")]
-    public AccountInfo AccountData(int accountId)
+    public IActionResult AccountData(int accountId)
     {
-        _logger.LogInformation($"Getting account data from account {accountId}");
-
-        string temp = _charlesSchwabService.GetAccountData(accountId).Result.Content.ReadAsStringAsync().Result;
-        Regex shortRegex = new Regex(@"shortQuantity.?.?([0-9]*)");
-        Match shortQuantitys = shortRegex.Match(temp);
-        Regex averageRegex = new Regex(@"averagePrice.?.?([0-9.]*),");
-        Match averageQuantities = averageRegex.Match(temp);
-        Regex longRegex = new Regex(@"longQuantity.?.?([0-9]*)");
-        Match longQuantities = longRegex.Match(temp);
-        Regex symbolRegex = new Regex(@"symbol.?.?.?([A-Z]*)");
-        Match symbolStuffs = symbolRegex.Match(temp);
-        Dictionary<string, Standing> positions = new Dictionary<string, Standing>();
-        while (shortQuantitys.Success)
+        _logger.LogInformation("Getting account data from account {accountId}", accountId);
+        try
         {
-            // Console.WriteLine($"shortQuantity: {shortQuantitys}");
-            positions[symbolStuffs.Groups[1].Value] = new Standing(symbolStuffs.Groups[1].Value,
-                int.Parse(longQuantities.Groups[1].Value),
-                int.Parse(shortQuantitys.Groups[1].Value), double.Parse(averageQuantities.Groups[1].Value));
-            longQuantities = longQuantities.NextMatch();
-            shortQuantitys = shortQuantitys.NextMatch();
-            symbolStuffs = symbolStuffs.NextMatch();
-            averageQuantities = averageQuantities.NextMatch();
+            return Ok(_charlesSchwabService.GetAccountData(accountId));
         }
-
-        Regex input = new Regex(@"cashBalance.?.?([0-9.]+)");
-        Match availableFunds = input.Match(temp);
-        Regex inputNumber = new Regex(@"accountNumber.?.?.?([0-9]*)");
-        Match accountNumber = inputNumber.Match(temp);
-        AccountInfo accountInfo = new AccountInfo(new Balance(double.Parse(availableFunds.Groups[1].Value)), positions);
-        accountInfo.AccountNumber = accountNumber.Groups[1].Value;
-        return accountInfo;
+        catch (Exception e)
+        {
+            _logger.LogError("{}", e);
+            throw;
+        }
     }
 
     [HttpGet("/IsMarketOpen")]
-    public MarketTime IsMarketOpen(int accountId)
+    public IActionResult IsMarketOpen(int accountId)
     {
-        return _charlesSchwabService.GetMarketTime(accountId).Result;
+        try
+        {
+            return Ok(_charlesSchwabService.GetMarketTime(accountId));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("{}", e);
+            throw;
+        }
     }
 }

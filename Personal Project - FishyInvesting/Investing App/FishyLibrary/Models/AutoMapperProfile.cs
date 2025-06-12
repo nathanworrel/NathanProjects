@@ -6,7 +6,7 @@ using FishyLibrary.Models.StrategyRuntime;
 using FishyLibrary.Models.StrategySecondaryProduct;
 using FishyLibrary.Models.StrategyType;
 using FishyLibrary.Models.Trade;
-using FishyLibrary.Models.User;
+using FishyLibrary.Models.Client;
 
 namespace FishyLibrary.Models;
 
@@ -38,8 +38,8 @@ public class AutoMapperProfile : Profile
         CreateMap<Account.Account, AccountPost>();
         
         // User
-        CreateMap<User.User, UserGet>();
-        CreateMap<UserPost, User.User>();
+        CreateMap<Client.Client, ClientGet>();
+        CreateMap<ClientPost, Client.Client>();
         
         // Strategy Secondary Product
         CreateMap<StrategySecondaryProduct.StrategySecondaryProduct, StrategySecondaryProductGet>();

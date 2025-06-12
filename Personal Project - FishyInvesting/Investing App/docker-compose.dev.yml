@@ -1,0 +1,175 @@
+﻿services:
+  dev-db:
+    image: postgres:16
+    container_name: devdb
+    user: postgres
+    restart: always
+    ports:
+      - "1:1"
+    environment:
+      POSTGRES_DB: dev-1
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_ROOT_PASSWORD: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./insert-dev.sql:/docker-entrypoint-initdb.d/insert-dev.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  logs:
+    image: datalust/seq:latest
+    container_name: logs
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y" #Accepts the Seq End User License Agreement
+    ports:
+      - "1:80" # Exposes the Seq web interface on port 1
+      - "1:1" # Exposes the Seq ingestion port on 1
+    volumes:
+      - seq_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "1:1" # Exposes the ingestion port on 1  
+      - "11:11" # Exposes the web interface on port 11
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      
+  notifications:
+    image: notifications
+    container_name: notifications
+    restart: always
+    env_file:
+      - 'shared.env'
+  
+  charles-schwab:
+    image: charles-schwab
+    container_name: charlesschwab
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    environment:
+      - DISPLAY=:99  # Set the display for headless mode
+      - SELENIUM_HEADLESS=true  # Ensure Selenium runs in headless mode
+    volumes:
+      - /dev/shm:/dev/shm 
+  
+  make-trade:
+    image: make-trade
+    container_name: maketrade
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+
+  get-data:
+    image: get-data
+    container_name: getdata
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+      
+  strategy-service:
+    image: strategy-service
+    container_name: strategyservice
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+      
+  scheduler:
+    image: scheduler
+    container_name: scheduler
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+      strategy-service:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  update-trades:
+    image: update-trades
+    container_name: updatetrades
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+      
+  strategy-runner:
+    image: strategy-runner
+    container_name: strategyrunner
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      get-data:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+      update-trades:
+        condition: service_started
+    ports:
+      - "7042:1"
+    env_file:
+      - 'shared.env'
+      
+  db-access:
+    image: db-access
+    container_name: dbaccess
+    restart: always
+    depends_on:
+      dev-db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+
+volumes:
+  postgres_data:
+    
+  seq_data:
+    
+  rabbitmq_data:

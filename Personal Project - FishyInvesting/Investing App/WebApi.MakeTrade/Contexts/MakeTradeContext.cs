@@ -25,15 +25,15 @@ public class MakeTradeContext : DbContext
         {
             string host = "localhost";
             int port = 1;
-            string database = "dev-fishydb";
+            string database = "dev-1";
             if (_env != null && !_env.IsDevelopment())
             {
                 
                 host = "db";
                 port = 1;
-                database = "fishydb";
+                database = "1";
             }
-            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=1;Password=1;");
+            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=postgres;Password=1;");
         }
     
         base.OnConfiguring(builder);

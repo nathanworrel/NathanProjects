@@ -1,5 +1,7 @@
 using AutoMapper;
 using FishyLibrary.Models.Account;
+using FishyLibrary.Models.Strategy;
+using Microsoft.EntityFrameworkCore;
 using WebApi.DB.Access.Contexts;
 
 namespace WebApi.DB.Access.Service;
@@ -56,5 +58,17 @@ public class AccountService : IAccountService
             _logger.LogError("{}", e);
             return null;
         }
+    }
+
+    public List<Strategy>? GetStrategiesForAccount(int accountId)
+    {
+        var account = _dbAccessContext.Accounts
+            .Include(x => x.Strategies)
+            .FirstOrDefault(a => a.Id == accountId);
+        if (account == null)
+        {
+            return null;
+        }
+        return account.Strategies?.ToList();
     }
 }

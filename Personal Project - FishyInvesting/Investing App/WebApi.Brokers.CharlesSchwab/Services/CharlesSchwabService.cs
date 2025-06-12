@@ -1,34 +1,34 @@
 using System.Diagnostics;
-using System.Net.Http.Headers;
+using System.Globalization;
 using System.Text;
+using FishyLibrary.Helpers;
 using FishyLibrary.Models;
 using FishyLibrary.Models.Account;
 using FishyLibrary.Models.MarketTime;
+using FishyLibrary.Models.Client;
+using FishyLibrary.Models.Order;
+using MakeTrade.Models;
 using Microsoft.IdentityModel.Tokens;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using WebApi.Template.Contexts;
 using WebApi.Template.Models;
-using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace WebApi.Template.Services;
 
 public class CharlesSchwabService : ICharlesSchwabService
 {
-    private static readonly string RefreshAccessTokenUrl = "https://api.schwabapi.com/v1/oauth/token";
     private static readonly string AppCallbackUrl = "https://127.0.0.1";
-    private static readonly string TraderBaseUrl = "https://api.schwabapi.com/trader/v1";
-    private static readonly string MarketDataBaseUrl = "https://api.schwabapi.com/marketdata/v1";
     private readonly CharlesSchwabContext _charlesSchwabContext;
-    private readonly HttpClient _httpClient;
+    private readonly ICharlesSchwabDataService _charlesSchwabDataService;
     private readonly ILogger<CharlesSchwabService> _logger;
 
-    public CharlesSchwabService(CharlesSchwabContext charlesSchwabContext, IHttpClientFactory httpClientFactory,
+    public CharlesSchwabService(CharlesSchwabContext charlesSchwabContext,
+        ICharlesSchwabDataService charlesSchwabDataService,
         ILogger<CharlesSchwabService> logger)
     {
         _charlesSchwabContext = charlesSchwabContext;
-        _httpClient = httpClientFactory.CreateClient();
+        _charlesSchwabDataService = charlesSchwabDataService;
         _logger = logger;
     }
 
@@ -36,9 +36,9 @@ public class CharlesSchwabService : ICharlesSchwabService
     {
         try
         {
-            foreach (var userId in _charlesSchwabContext.UsersDatabase.Select(x => x.Id).ToList())
+            foreach (var clientId in _charlesSchwabContext.Clients.Select(x => x.Id).ToList())
             {
-                AutomaticSignIn(userId);
+                AutomaticSignIn(clientId);
             }
         }
         catch (Exception e)
@@ -48,10 +48,10 @@ public class CharlesSchwabService : ICharlesSchwabService
         }
     }
 
-    public string? AutomaticSignIn(int userId)
+    public string? AutomaticSignIn(int clientId)
     {
         AuthToken? authToken = _charlesSchwabContext.AuthTokens
-            .FirstOrDefault(r => r.UserId == userId);
+            .FirstOrDefault(r => r.ClientId == clientId);
         if (authToken == null)
         {
             return null;
@@ -59,7 +59,7 @@ public class CharlesSchwabService : ICharlesSchwabService
 
         if (authToken.RefreshTokenExpiration < DateTime.Now.AddMinutes(1).ToUniversalTime())
         {
-            return GetTokens(userId, authToken);
+            return GetNewRefreshToken(clientId, authToken);
         }
 
         if (authToken.AccessTokenExpiration < DateTime.Now.AddMinutes(1).ToUniversalTime())
@@ -70,10 +70,10 @@ public class CharlesSchwabService : ICharlesSchwabService
         return authToken.AccessToken;
     }
 
-    public string? ManualSignIn(int userId)
+    public string? ManualSignIn(int clientId)
     {
         AuthToken? authToken = _charlesSchwabContext.AuthTokens
-            .FirstOrDefault(r => r.UserId == userId);
+            .FirstOrDefault(r => r.ClientId == clientId);
 
         string? appKey;
         string? appSecret;
@@ -103,59 +103,12 @@ public class CharlesSchwabService : ICharlesSchwabService
         Console.WriteLine("Enter Redirect URL:");
         string? returnedUrl = Console.ReadLine();
 
-        string responseCode = returnedUrl.Substring(returnedUrl.IndexOf("code=") + 5,
-            returnedUrl.IndexOf("%40") - returnedUrl.IndexOf("code=") - 5) + "@";
-
-        AuthResult? authResult = SendRefresh(GetRefreshTokenData(responseCode), appKey, appSecret).Result;
-        if (authResult == null)
-        {
-            return null;
-        }
-
-        HttpResponseMessage accountHash = GetAccountHash(authResult.access_token).Result;
-        if (!accountHash.IsSuccessStatusCode)
-        {
-            throw new Exception(accountHash.Content.ReadAsStringAsync().Result);
-        }
-
-        if (authToken != null)
-        {
-            _charlesSchwabContext.AuthTokens.Remove(authToken);
-        }
-
-        _charlesSchwabContext.AuthTokens.Add(new AuthToken(userId, authResult.access_token,
-            DateTime.Now.AddSeconds(authResult.expires_in).ToUniversalTime(), authResult.refresh_token,
-            DateTime.Now.AddDays(6).ToUniversalTime(),
-            responseCode, appKey, appSecret));
-
-        var accountHashData = accountHash.Content.ReadAsStringAsync().Result;
-        var hashedAccountValues = JsonConvert.DeserializeObject<List<AccountResponse>>(accountHashData);
-        if (hashedAccountValues == null)
-        {
-            _logger.LogInformation($"No Accounts found for user {userId}");
-            return null;
-        }
-
-        foreach (var hashedAccountValue in hashedAccountValues)
-        {
-            if (_charlesSchwabContext.Accounts.Where(a => a.AccountId == hashedAccountValue.AccountNumber)
-                .IsNullOrEmpty())
-            {
-                var newAccount = new Account();
-                newAccount.AccountId = hashedAccountValue.AccountNumber;
-                newAccount.HashAccountId = hashedAccountValue.HashValue;
-                newAccount.UserId = userId;
-                _charlesSchwabContext.Accounts.Add(newAccount);
-            }
-        }
-
-        _charlesSchwabContext.SaveChanges();
-        return authResult.access_token;
+        return UpdateRefreshTokenFromURL(clientId, authToken, returnedUrl, appKey, appSecret);
     }
 
-    private string? GetTokens(int userId, AuthToken authToken)
+    private string? GetNewRefreshToken(int clientId, AuthToken authToken)
     {
-        Users? users = _charlesSchwabContext.UsersDatabase.FirstOrDefault(n => n.Id == userId);
+        Client? users = _charlesSchwabContext.Clients.FirstOrDefault(n => n.Id == clientId);
         if (users is not { IsAutomatic: true })
         {
             return null;
@@ -183,81 +136,98 @@ public class CharlesSchwabService : ICharlesSchwabService
         options.AddUserProfilePreference("profile.default_content_setting_values.notifications", 1);
         options.AddUserProfilePreference("credentials_enable_service", false);
 
-        IWebDriver driver = new ChromeDriver(options);
-
-        driver.Navigate().GoToUrl(authUrl);
-
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        IWebElement idInput = driver.FindElement(By.CssSelector("input#loginIdInput"));
-        foreach (char c in userName)
+        IWebDriver driver = null;
+        string? returnedUrl;
+        try
         {
-            idInput.SendKeys(c.ToString()); // Send one character at a time
-            Thread.Sleep(10); // Delay in milliseconds (adjust as needed)
-        }
+            _logger.LogInformation("Opening Chrome Driver");
+            driver = new ChromeDriver(options);
+            driver.Navigate().GoToUrl(authUrl);
 
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-        IWebElement passwordInput = driver.FindElement(By.Id("passwordInput"));
-        foreach (char c in password)
-        {
-            passwordInput.SendKeys(c.ToString()); // Send one character at a time
-            Thread.Sleep(10); // Delay in milliseconds (adjust as needed)
-        }
+            IWebElement idInput = driver.FindElement(By.CssSelector("input#loginIdInput"));
+            foreach (char c in userName)
+            {
+                idInput.SendKeys(c.ToString()); // Send one character at a time
+                Thread.Sleep(10); // Delay in milliseconds (adjust as needed)
+            }
 
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-        IWebElement loginButton = driver.FindElement(By.Id("btnLogin"));
-        loginButton.Click();
+            IWebElement passwordInput = driver.FindElement(By.Id("passwordInput"));
+            foreach (char c in password)
+            {
+                passwordInput.SendKeys(c.ToString()); // Send one character at a time
+                Thread.Sleep(10); // Delay in milliseconds (adjust as needed)
+            }
 
-        Thread.Sleep(5000);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            IWebElement loginButton = driver.FindElement(By.Id("btnLogin"));
+            loginButton.Click();
 
-        var mobileApprove = driver.FindElements(By.Id("mobile_approve"));
-        if (mobileApprove.Count > 0)
-        {
-            mobileApprove[0].Click();
-            Thread.Sleep(60000);
-            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
+            Thread.Sleep(5000);
 
-            IWebElement rememberDevice = driver.FindElement(By.Id("remember-device-yes-content"));
-            rememberDevice.Click();
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            var mobileApprove = driver.FindElements(By.Id("mobile_approve"));
+            if (mobileApprove.Count > 0)
+            {
+                _logger.LogInformation("Mobile approval is required");
+                mobileApprove[0].Click();
+                Thread.Sleep(60000);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
+
+                IWebElement rememberDevice = driver.FindElement(By.Id("remember-device-yes-content"));
+                rememberDevice.Click();
+                Thread.Sleep(1000);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+                IWebElement buttonContinue = driver.FindElement(By.Id("btnContinue"));
+                buttonContinue.Click();
+                Thread.Sleep(1000);
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+            }
+
+            IWebElement acceptTermsButton = driver.FindElement(By.Id("acceptTerms"));
+            acceptTermsButton.Click();
             Thread.Sleep(1000);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
 
-            IWebElement buttonContinue = driver.FindElement(By.Id("btnContinue"));
-            buttonContinue.Click();
+            IWebElement submitButton = driver.FindElement(By.Id("submit-btn"));
+            submitButton.Click();
             Thread.Sleep(1000);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            IWebElement acceptButton = driver.FindElement(By.Id("agree-modal-btn-"));
+            acceptButton.Click();
+            Thread.Sleep(1000);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            IWebElement finalSubmitButton = driver.FindElement(By.Id("submit-btn"));
+            finalSubmitButton.Click();
+            Thread.Sleep(1000);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            IWebElement cancelButton = driver.FindElement(By.Id("cancel-btn"));
+            cancelButton.Click();
+            Thread.Sleep(3000);
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+
+            returnedUrl = driver.Url;
+            _logger.LogInformation("Closed chrome window");
         }
+        catch (Exception e)
+        {
+            if (driver != null)
+            {
+                driver.Quit();
+            }
 
-        IWebElement acceptTermsButton = driver.FindElement(By.Id("acceptTerms"));
-        acceptTermsButton.Click();
-        Thread.Sleep(1000);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        IWebElement submitButton = driver.FindElement(By.Id("submit-btn"));
-        submitButton.Click();
-        Thread.Sleep(1000);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        IWebElement acceptButton = driver.FindElement(By.Id("agree-modal-btn-"));
-        acceptButton.Click();
-        Thread.Sleep(1000);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        IWebElement finalSubmitButton = driver.FindElement(By.Id("submit-btn"));
-        finalSubmitButton.Click();
-        Thread.Sleep(1000);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        IWebElement cancelButton = driver.FindElement(By.Id("cancel-btn"));
-        cancelButton.Click();
-        Thread.Sleep(3000);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
-
-        string? returnedUrl = driver.Url;
+            _logger.LogError("Issue during driver usage: {DriverError}", e.Message);
+            throw;
+        }
 
         driver.Quit();
 
@@ -266,60 +236,85 @@ public class CharlesSchwabService : ICharlesSchwabService
             return null;
         }
 
+        _logger.LogDebug("{returnedUrl}", returnedUrl);
+
+        return UpdateRefreshTokenFromURL(clientId, authToken, returnedUrl, appKey, appSecret);
+    }
+
+    private string? UpdateRefreshTokenFromURL(int clientId, AuthToken authToken, string returnedUrl, string appKey,
+        string appSecret)
+    {
         int codeIndex = returnedUrl.IndexOf("code=");
         if (codeIndex <= 0)
         {
             _logger.LogError("Return URL missing 'code='.");
             return null;
         }
+
         string responseCode = returnedUrl.Substring(codeIndex + 5,
             returnedUrl.IndexOf("%40") - codeIndex - 5) + "@";
 
-        AuthResult? authResult = SendRefresh(GetRefreshTokenData(responseCode), appKey, appSecret).Result;
+        AuthResult? authResult =
+            _charlesSchwabDataService.SendRefresh(GetRefreshTokenData(responseCode), appKey, appSecret);
         if (authResult == null)
         {
             return null;
         }
 
-        HttpResponseMessage accountHash = GetAccountHash(authResult.access_token).Result;
-        if (!accountHash.IsSuccessStatusCode)
-        {
-            throw new Exception(accountHash.Content.ReadAsStringAsync().Result);
-        }
-
-        var accountHashData = accountHash.Content.ReadAsStringAsync().Result;
-        var hashedAccountValues = JsonConvert.DeserializeObject<List<AccountResponse>>(accountHashData);
-        if (hashedAccountValues == null)
-        {
-            _logger.LogInformation($"No Accounts found for user {userId}");
-            return null;
-        }
-
+        List<AccountResponse> hashedAccountValues = _charlesSchwabDataService.GetAccountHash(authResult.access_token);
         foreach (var hashedAccountValue in hashedAccountValues)
         {
-            if (_charlesSchwabContext.Accounts.Where(a => a.AccountId == hashedAccountValue.AccountNumber)
+            if (_charlesSchwabContext.Accounts.Where(a => a.AccountId == hashedAccountValue.accountNumber)
                 .IsNullOrEmpty())
             {
                 var newAccount = new Account();
-                newAccount.AccountId = hashedAccountValue.AccountNumber;
-                newAccount.HashAccountId = hashedAccountValue.HashValue;
-                newAccount.UserId = userId;
+                newAccount.AccountId = hashedAccountValue.accountNumber;
+                newAccount.HashAccountId = hashedAccountValue.hashValue;
+                newAccount.ClientId = clientId;
                 _charlesSchwabContext.Accounts.Add(newAccount);
             }
         }
 
-        _charlesSchwabContext.AuthTokens.Add(new AuthToken(userId, authResult.access_token,
+        _charlesSchwabContext.AuthTokens.Add(new AuthToken(clientId, authResult.access_token,
             DateTime.Now.AddSeconds(authResult.expires_in).ToUniversalTime(), authResult.refresh_token,
-            DateTime.Now.AddDays(6).ToUniversalTime(),
+            DateTime.Now.AddDays(6).AddHours(23).AddMinutes(54).ToUniversalTime(),
             responseCode, appKey, appSecret));
         _charlesSchwabContext.Remove(authToken);
         _charlesSchwabContext.SaveChanges();
         return authResult.access_token;
     }
     
+    private Dictionary<string, string> GetRefreshTokenData(string code)
+    {
+        return new Dictionary<string, string>
+        {
+            { "grant_type", "authorization_code" },
+            { "redirect_uri", AppCallbackUrl },
+            { "code", code }
+        };
+    }
+
+    private const string Salt = "1";
+
+    public static string Encode(string plainText)
+    {
+        string saltedText = Salt + plainText;
+
+        byte[] plainBytes = Encoding.UTF8.GetBytes(saltedText);
+        return Convert.ToBase64String(plainBytes);
+    }
+
     public static string Decode(string base64Text)
     {
-        return null;
+        byte[] saltedBytes = Convert.FromBase64String(base64Text);
+        string saltedText = Encoding.UTF8.GetString(saltedBytes);
+
+        if (!saltedText.StartsWith(Salt))
+        {
+            throw new InvalidOperationException("Invalid salt in the input string.");
+        }
+
+        return saltedText.Substring(Salt.Length);
     }
 
     private string? RefreshAccessToken(AuthToken authToken)
@@ -329,7 +324,7 @@ public class CharlesSchwabService : ICharlesSchwabService
             { "grant_type", "refresh_token" },
             { "refresh_token", authToken.RefreshToken }
         };
-        AuthResult? result = SendRefresh(dict, authToken.AppKey, authToken.AppSecret).Result;
+        AuthResult? result = _charlesSchwabDataService.SendRefresh(dict, authToken.AppKey, authToken.AppSecret);
         if (result == null)
         {
             return null;
@@ -341,83 +336,96 @@ public class CharlesSchwabService : ICharlesSchwabService
         return authToken.AccessToken;
     }
 
-    private async Task<AuthResult?> SendRefresh(Dictionary<string, string> dict, string appKey, string appSecret)
+    public GenericResponse PlaceTrade(FishyLibrary.Helpers.MakeTrade makeTrade, int accountId, bool dry)
     {
-        var req = new HttpRequestMessage(HttpMethod.Post, RefreshAccessTokenUrl);
-        string credentials = $"{appKey}:{appSecret}";
-        string base64Credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials));
-        req.Headers.Add("Authorization", $"Basic {base64Credentials}");
-        req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-        req.Content = new FormUrlEncodedContent(dict);
-        HttpResponseMessage response = await _httpClient.SendAsync(req);
-        if (response.IsSuccessStatusCode)
+        _logger.LogInformation("Received trade: {trade} for account: {accountId}", makeTrade, accountId);
+
+        Order order = new Order(makeTrade);
+
+        var accountHashValue = GetAccountHashValue(accountId);
+        var tokenForAccount = GetTokenForAccount(accountId);
+        GenericResponse responseMessage =
+            _charlesSchwabDataService.VerifySendMakeTrade(order, accountHashValue,
+                tokenForAccount);
+        if (!responseMessage.isSuccess)
         {
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            AuthResult? authResult = JsonConvert.DeserializeObject<AuthResult>(jsonResponse);
-            return authResult;
+            _logger.LogError("{}", responseMessage);
+            _logger.LogError("Failed to validate: {order}", order);
+            return responseMessage;
         }
 
-        return null;
+        _logger.LogInformation(
+            "Verifying order successful for trade: {aide} {quantity} {product} at {price} to account: {accountId}",
+            makeTrade.Side, makeTrade.Quantity, makeTrade.Product, makeTrade.Price, accountId);
+
+        if (dry)
+        {
+            _logger.LogInformation("Dry run - trade not placed");
+            responseMessage.Message = "0";
+            return responseMessage;
+        }
+
+        _logger.LogInformation(
+            "Sending Order {side} {quantity} {product} at {price} to account: {accountId}",
+            makeTrade.Side, makeTrade.Quantity, makeTrade.Product, makeTrade.Price, accountId);
+
+        responseMessage = _charlesSchwabDataService.SendMakeTrade(order, accountHashValue, tokenForAccount);
+        if (responseMessage.isSuccess)
+        {
+            _logger.LogInformation(
+                "Extracted number: {number} for {makeTrade.Side} {makeTrade.Quantity} {makeTrade.Product} at " +
+                "{makeTrade.Price} to account: {accountId}", responseMessage.Message, makeTrade.Side,
+                makeTrade.Quantity, makeTrade.Product, makeTrade.Price, accountId);
+        }
+
+        return responseMessage;
     }
 
-    public async Task<HttpResponseMessage> SendMakeTrade(Order order, int accountId)
+    public double GetCurrentMarketPrice(int accountId, string product)
     {
-        var req = new HttpRequestMessage(HttpMethod.Post,
-            $"{TraderBaseUrl}/accounts/{GetAccountHashValue(accountId)}/orders");
-        var jsonOrder = JsonConvert.SerializeObject(order);
-        req.Content = new StringContent(jsonOrder, Encoding.UTF8, "application/json");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
+        var tokenForAccount = GetTokenForAccount(accountId);
+        PriceData prices = _charlesSchwabDataService.GetCurrentMarketPrice(product, tokenForAccount);
+        return (prices.quote.askPrice + prices.quote.bidPrice) / 2;
     }
 
-    public async Task<HttpResponseMessage> VerifySendMakeTrade(Order order, int accountId)
+    private string GetTokenForAccount(int accountId)
     {
-        var req = new HttpRequestMessage(HttpMethod.Post,
-            $"{TraderBaseUrl}/accounts/{GetAccountHashValue(accountId)}/previewOrder");
-        var jsonOrder = JsonConvert.SerializeObject(order);
-        req.Content = new StringContent(jsonOrder, Encoding.UTF8, "application/json");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
+        var automaticSignIn = AutomaticSignIn(AccountToUser(accountId));
+        if (automaticSignIn == null)
+        {
+            _logger.LogError("Unable to get account token for account:{accountId}", accountId);
+            throw new Exception("Unable to get account token for account: " + accountId);
+        }
+
+        return automaticSignIn;
     }
 
-    public async Task<HttpResponseMessage> GetCurrentMarketPrice(int accountId, string product)
+    public AccountInfo GetAccountData(int accountId)
     {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{MarketDataBaseUrl}/{product}/quotes");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
+        var accountHashValue = GetAccountHashValue(accountId);
+        var tokenForAccount = GetTokenForAccount(accountId);
+        var securitiesAccount = _charlesSchwabDataService.GetAccountData(accountHashValue, tokenForAccount)
+            .securitiesAccount;
+        Dictionary<string, Standing> positions = new Dictionary<string, Standing>();
+        foreach (var position in securitiesAccount.positions)
+        {
+            Standing standing = new Standing(
+                position.instrument.symbol,
+                (int)position.longQuantity,
+                (int)position.shortQuantity,
+                position.averagePrice
+            );
+            positions.Add(position.instrument.symbol, standing);
+        }
+
+        var balance = new Balance(securitiesAccount.currentBalances.cashBalance);
+        AccountInfo accountInfo = new AccountInfo(balance, positions);
+        accountInfo.AccountNumber = securitiesAccount.accountNumber;
+
+        return accountInfo;
     }
 
-    private string? GetTokenForAccount(int accountId)
-    {
-        return AutomaticSignIn(AccountToUser(accountId));
-    }
-
-    public async Task<HttpResponseMessage> GetAccountData(int accountId)
-    {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{TraderBaseUrl}/accounts/{GetAccountHashValue(accountId)}?fields=positions");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
-    }
-
-    public async Task<HttpResponseMessage> GetAccountHash(string accessToken)
-    {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{TraderBaseUrl}/accounts/accountNumbers");
-        req.Headers.Add("Authorization", $"Bearer {accessToken}");
-        return await _httpClient.SendAsync(req);
-    }
-
-    private async Task<HttpResponseMessage> IsMarketOpen(int accountId)
-    {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{MarketDataBaseUrl}/markets/equity?date={DateTime.Now.Date:yyyy-MM-dd}");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
-    }
-
-    public async Task<MarketTime> GetMarketTime(int accountId)
+    public MarketTime GetMarketTime(int accountId)
     {
         try
         {
@@ -425,13 +433,10 @@ public class CharlesSchwabService : ICharlesSchwabService
             MarketTime? today = _charlesSchwabContext.MarketTimes.FirstOrDefault(m => m.Date.Day == dayOfMonth);
             if (today == null)
             {
-                var result = IsMarketOpen(accountId).Result.Content.ReadAsStringAsync().Result;
-                var equityResponse = JsonSerializer.Deserialize<EquityResponse>(result);
-                if (equityResponse == null || equityResponse.Equity == null || equityResponse.Equity.EQ == null)
-                {
-                    today = new MarketTime { Date = DateTimeOffset.Now.Date.ToUniversalTime().Date, IsOpen = false };
-                }
-                else
+                var tokenForAccount = GetTokenForAccount(accountId);
+                var equityResponse = _charlesSchwabDataService.IsMarketOpen(tokenForAccount);
+
+                if (equityResponse.Equity.EQ != null)
                 {
                     today = new MarketTime
                     {
@@ -441,12 +446,22 @@ public class CharlesSchwabService : ICharlesSchwabService
                         Close = equityResponse.Equity.EQ.SessionHours.RegularMarket[0].End.TimeOfDay
                     };
                 }
+                else
+                {
+                    today = new MarketTime { 
+                        Date = DateTimeOffset.Now.Date.ToUniversalTime().Date, 
+                        IsOpen = false, 
+                        Open = DateTime.Today.ToUniversalTime().TimeOfDay, 
+                        Close = DateTime.Today.ToUniversalTime().TimeOfDay
+                    };
+                }
+
                 // remove previous days
                 var previousDays = _charlesSchwabContext.MarketTimes.ToList();
                 _charlesSchwabContext.MarketTimes.RemoveRange(previousDays);
                 // add a new day
                 _charlesSchwabContext.MarketTimes.Add(today);
-                await _charlesSchwabContext.SaveChangesAsync();
+                _charlesSchwabContext.SaveChangesAsync();
             }
 
             return today;
@@ -458,20 +473,19 @@ public class CharlesSchwabService : ICharlesSchwabService
         }
     }
 
-    public async Task<HttpResponseMessage> GetOrders(int accountId, DateTime startDate)
+    public List<OrderData> GetOrders(int accountId, string startTime)
     {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{TraderBaseUrl}/accounts/{GetAccountHashValue(accountId)}/orders?fromEnteredTime={startDate.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'").Replace(":", "%3A")}&toEnteredTime={DateTime.Now.Date.AddDays(1).Date.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'").Replace(":", "%3A")}");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
+        var accountHashValue = GetAccountHashValue(accountId);
+        var tokenForAccount = GetTokenForAccount(accountId);
+        var startDate = DateTime.ParseExact(startTime, @"MM/dd/yyyy", CultureInfo.InvariantCulture);
+        return _charlesSchwabDataService.GetOrders(accountHashValue, tokenForAccount, startDate);
     }
 
-    public async Task<HttpResponseMessage> GetOrder(int accountId, string orderNumber)
+    public OrderData GetOrder(int accountId, string orderNumber)
     {
-        var req = new HttpRequestMessage(HttpMethod.Get,
-            $"{TraderBaseUrl}/accounts/{GetAccountHashValue(accountId)}/orders/{orderNumber}");
-        req.Headers.Add("Authorization", $"Bearer {GetTokenForAccount(accountId)}");
-        return await _httpClient.SendAsync(req);
+        var accountHashValue = GetAccountHashValue(accountId);
+        var tokenForAccount = GetTokenForAccount(accountId);
+        return _charlesSchwabDataService.GetOrder(accountHashValue, tokenForAccount, orderNumber);
     }
 
     public string GetAccountHashValue(int accountId)
@@ -480,7 +494,7 @@ public class CharlesSchwabService : ICharlesSchwabService
             .FirstOrDefault(r => r.Id == accountId);
         if (account == null)
         {
-            _logger.LogError($"Account with id {accountId} not found");
+            _logger.LogError("Account with id {accountId} not found", accountId);
             throw new ArgumentException($"Account with id {accountId} not found");
         }
 
@@ -493,20 +507,10 @@ public class CharlesSchwabService : ICharlesSchwabService
             .FirstOrDefault(r => r.Id == accountId);
         if (account == null)
         {
-            _logger.LogError($"Account with id {accountId} not found");
+            _logger.LogError("Account with id {accountId} not found", accountId);
             throw new ArgumentException($"Account with id {accountId} not found");
         }
 
-        return account.UserId;
-    }
-
-    private Dictionary<string, string> GetRefreshTokenData(string code)
-    {
-        return new Dictionary<string, string>
-        {
-            { "grant_type", "authorization_code" },
-            { "redirect_uri", AppCallbackUrl },
-            { "code", code }
-        };
+        return account.ClientId;
     }
 }

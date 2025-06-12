@@ -1,9 +1,11 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CommonServices;
+using EasyNetQ;
 using FishyLibrary.Extensions;
 using MakeTrade;
 using Serilog;
+using SerilogTracing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSerilogWithSeq();
 
+_ = new ActivityListenerConfiguration()
+    .TraceToSharedLogger();
+
 // Use Autofac as the DI container
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Services.AddAutoMapper(typeof(FishyLibrary.Models.AutoMapperProfile));
@@ -27,6 +32,8 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
     containerBuilder.RegisterModule<ProgramRegistry>();
     containerBuilder.RegisterModule(new CommonRegistry(builder.Environment.EnvironmentName));
 });
+
+builder.Services.CustomAddEasyNetQ();
 
 var app = builder.Build();
 

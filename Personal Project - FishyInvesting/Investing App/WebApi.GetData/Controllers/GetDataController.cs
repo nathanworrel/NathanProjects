@@ -27,7 +27,7 @@ public class GetDataController : ControllerBase
     [HttpGet("GetNumDataAtTime")]
     public List<StockData> GetNumData(int num, string product = "TQQQ", string time = "9:40:00.000000")
     {
-        _logger.LogInformation($"Get {num} stock data at time: {time}");
+        _logger.LogInformation("Get {num} stock data at time: {time}",  num, time);
         return GetDataAtTimeAfter(product, time, DateTime.Now.AddDays(num * -2 - 10).Date.ToString()).TakeLast(num)
             .ToList();
     }
@@ -37,7 +37,7 @@ public class GetDataController : ControllerBase
         string time = "10:40:00.000000",
         string startDate = "2000-01-01")
     {
-        _logger.LogInformation($"Get all stock data for {products} at time: {time} after {startDate}");
+        _logger.LogInformation("Get all stock data for {products} at time: {time} after {startDate}", products, time, startDate);
         return GetDataAtTimeAfterMultiple(products, time, startDate);
     }
 
@@ -47,7 +47,7 @@ public class GetDataController : ControllerBase
     {
         try
         {
-            _logger.LogInformation($"Get {num} stock data at time {time}  for {products}");
+            _logger.LogInformation("Get {num} stock data at time {time}  for {products}", num, time, products);
             List<List<StockData>> data =
                 GetDataAtTimeAfterMultiple(products, time, DateTime.Now.AddDays(num * -2 - 10).Date.ToString());
             for (var i = 0; i < data.Count; i++)
@@ -67,23 +67,23 @@ public class GetDataController : ControllerBase
     [HttpGet("DateRanges")]
     public Tuple<DateTime?, DateTime?> GetDateRanges(string product)
     {
-        _logger.LogInformation($"Get {product} data ranges");
+        _logger.LogInformation("Get {product} data ranges", product);
         var result = _getDataService.GetDateRange(product);
-        _logger.LogInformation($"Date Range for product is {result.Item1} - {result.Item2}");
+        _logger.LogInformation("Date Range for product is {result.Item1} - {result.Item2}", result.Item1, result.Item2);
         return result;
     }
 
     [HttpPatch("LoadDataForProduct")]
     public void LoadDataForProduct(string product = "TQQQ")
     {
-        _logger.LogInformation($"Load data for product: {product}");
+        _logger.LogInformation("Load data for product: {product}", product);
         _getDataService.InsertNewData(product);
     }
 
     [HttpPatch("LoadDataForActiveStrategies")]
     public void LoadDataForActiveStrategies()
     {
-        _logger.LogInformation($"Load data for active strategies");
+        _logger.LogInformation("Load data for active strategies");
         _getDataService.InsertNewDataForActiveStrategies();
     }
 
@@ -125,7 +125,7 @@ public class GetDataController : ControllerBase
     private List<StockData> GetDataAtTimeAfter(string product, string time, string startDate)
     {
         DateTime utcTime = GetUTCTime(time);
-        _logger.LogInformation($"Get all stock data UTC at time: {utcTime}");
+        _logger.LogInformation("Get all stock data UTC at time: {utcTime}", utcTime);
         return _getDataService.GetDataAtTimeAfter(product, utcTime,
             startDate != "" ? DateTime.Parse(startDate) : DateTime.MinValue);
     }

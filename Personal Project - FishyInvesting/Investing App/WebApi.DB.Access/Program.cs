@@ -1,12 +1,11 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CommonServices;
-using FishyLibrary;
 using FishyLibrary.Extensions;
 using Serilog;
+using SerilogTracing;
 using WebApi.DB.Access;
-using WebApi.DB.Access.Contexts;
-using WebApi.DB.Access.Service;
+// Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Staging");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +32,9 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+_ = new ActivityListenerConfiguration()
+    .TraceToSharedLogger();
 
 builder.Services.AddAutoMapper(typeof(FishyLibrary.Models.AutoMapperProfile));
 builder.Services.AddHttpClient();

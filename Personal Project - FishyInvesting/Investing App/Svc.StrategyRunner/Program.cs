@@ -4,14 +4,14 @@ using CommonServices.Retrievers.Scheduler;
 using CommonServices.Retrievers.UpdateTrades;
 using FishyLibrary.Extensions;
 using Serilog;
+using SerilogTracing;
 using Svc.StrategyRunner;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<StrategyRunner>();
-builder.Services.AddSerilog(lc => lc 
-    .WriteTo.Console()
-    .WriteTo.Seq( // <-- add these lines
-        Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://localhost:5341"));
+builder.Services.AddSerilogWithSeq();
+_ = new ActivityListenerConfiguration()
+    .TraceToSharedLogger();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSingleton<ICharlesSchwabRetriever>(provider =>

@@ -1,4 +1,4 @@
-@WebApi.StrategyService_HostAddress = http://localhost:5098
+@WebApi.StrategyService_HostAddress = http://localhost:1
 
 GET {{WebApi.StrategyService_HostAddress}}/weatherforecast/
 Accept: application/json

@@ -1,7 +1,10 @@
+using EasyNetQ;
 using FishyLibrary.Models;
 using FishyLibrary.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Enrichers.Span;
+using SerilogTracing;
 
 namespace FishyLibrary.Extensions;
 
@@ -12,7 +15,15 @@ public static class ServiceCollectionExtenstions
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
             services.AddSerilog(lc => lc 
-                .WriteTo.Seq("http://logs:5341"));
+                .Enrich.With<ActivityEnricher>()
+                .WriteTo.Seq(Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://logs:1"));
+        }
+        else if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Staging")
+        {
+            
+            services.AddSerilog(lc => lc 
+                .Enrich.With<ActivityEnricher>()
+                .WriteTo.Seq(Environment.GetEnvironmentVariable("SEQ_URL") ?? "http://localhost:1"));
         }
         else
         {
@@ -20,43 +31,16 @@ public static class ServiceCollectionExtenstions
         }
         return services;
     }
-}
 
-public class Solution {
-    public bool IsAnagram(string s, string t) {
-        Dictionary<char,int> dict = new Dictionary<char,int>();
-        if (s.Length != t.Length)
+    public static IServiceCollection CustomAddEasyNetQ(this IServiceCollection services)
+    {
+        string host = "localhost";
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
-            return false;
+            host = "rabbitmq";
         }
-
-        foreach (var letter in s)
-        {
-            if (dict.ContainsKey(letter))
-            {
-                dict[letter]++;
-            }
-            else
-            {
-                dict.Add(letter, 1);
-            }
-        }
-
-        foreach (var letter in t)
-        {
-            if (dict.ContainsKey(letter))
-            {
-                dict[letter]--;
-                if (dict[letter] < 0)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        return true;
+        services.AddEasyNetQ($"host={host}");
+        
+        return services;
     }
 }

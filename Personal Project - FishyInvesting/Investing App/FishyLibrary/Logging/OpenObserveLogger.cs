@@ -41,13 +41,45 @@ public class OpenObserveLogger : ILogger
     {
         // Implement database save logic here
         // Define the API endpoint and credentials
+        var url = "";
+        var username = "";
+        var password = "";
 
         // Prepare the data to be sent
         var jsonData = JsonConvert.SerializeObject(logEntry);
         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-        
-        //changed logic********
-        Console.Out.WriteLine(content);
+        var task = SendToOpenObserve(username, password, url, content).Result;
     }
-    
+
+    private async Task<bool> SendToOpenObserve(string username, string password, string url, StringContent content)
+    {
+        try
+        {
+            // Use HttpClient to send the request
+            using (var client = new HttpClient(new HttpClientHandler
+                   {
+                       ServerCertificateCustomValidationCallback =
+                           HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                   }))
+            {
+                client.Timeout = TimeSpan.FromSeconds(15);
+                // Add Basic Authentication header
+                var byteArray = Encoding.ASCII.GetBytes($"{username}:{password}");
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+                // Send POST request
+                var response = await client.PostAsync(url, content);
+
+                // Read and print the response
+                string responseString = await response.Content.ReadAsStringAsync();
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred logging '{content}' to OpenObserve: {ex.Message}");
+            return false;
+        }
+    }
 }

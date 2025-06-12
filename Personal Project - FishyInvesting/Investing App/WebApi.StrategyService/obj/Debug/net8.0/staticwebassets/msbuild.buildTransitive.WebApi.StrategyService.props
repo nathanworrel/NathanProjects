@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/WebApi.StrategyService.props" />
-</Project>

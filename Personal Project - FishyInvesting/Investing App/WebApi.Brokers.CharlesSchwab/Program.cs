@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FishyLibrary.Extensions;
 using Serilog;
+using SerilogTracing;
 using WebApi.Template;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
 builder.Services.AddSerilogWithSeq();
+_ = new ActivityListenerConfiguration()
+    .TraceToSharedLogger();
 
 // Use Autofac as the DI container
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());

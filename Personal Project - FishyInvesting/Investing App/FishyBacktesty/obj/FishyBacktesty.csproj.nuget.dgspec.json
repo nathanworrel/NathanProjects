@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {}
+    "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {}
   },
   "projects": {
-    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
+    "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/CommonServices.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj",
+        "projectUniqueName": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/CommonServices.csproj",
         "projectName": "CommonServices",
-        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj",
+        "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/CommonServices.csproj",
         "packagesPath": "/home/nathanielworrel/.nuget/packages/",
-        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/obj/",
+        "outputPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
@@ -26,8 +26,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
-                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj"
               }
             }
           }
@@ -63,6 +63,10 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Serilog.Enrichers.Span": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
             "Serilog.Sinks.Console": {
               "target": "Package",
               "version": "[6.0.0, )"
@@ -70,6 +74,10 @@
             "Serilog.Sinks.Seq": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "SerilogTracing": {
+              "target": "Package",
+              "version": "[2.3.1, )"
             }
           },
           "imports": [
@@ -92,14 +100,14 @@
         }
       }
     },
-    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {
+    "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyBacktesty/FishyBacktesty.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
+        "projectUniqueName": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
         "projectName": "FishyBacktesty",
-        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
+        "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyBacktesty/FishyBacktesty.csproj",
         "packagesPath": "/home/nathanielworrel/.nuget/packages/",
-        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyBacktesty/obj/",
+        "outputPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyBacktesty/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
@@ -114,11 +122,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj": {
-                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/CommonServices/CommonServices.csproj"
+              "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/CommonServices.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/CommonServices/CommonServices.csproj"
               },
-              "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
-                "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj"
+              "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+                "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj"
               }
             }
           }
@@ -150,6 +158,10 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Serilog.Enrichers.Span": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
             "Serilog.Sinks.Console": {
               "target": "Package",
               "version": "[6.0.0, )"
@@ -157,6 +169,10 @@
             "Serilog.Sinks.Seq": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "SerilogTracing": {
+              "target": "Package",
+              "version": "[2.3.1, )"
             },
             "YahooFinanceApi": {
               "target": "Package",
@@ -186,14 +202,14 @@
         }
       }
     },
-    "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
+    "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj",
+        "projectUniqueName": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj",
         "projectName": "FishyLibrary",
-        "projectPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/FishyLibrary.csproj",
+        "projectPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/FishyLibrary.csproj",
         "packagesPath": "/home/nathanielworrel/.nuget/packages/",
-        "outputPath": "/home/nathanielworrel/Documents/NathanSchoolProjects/Personal Project - FishyInvesting/FishyLibrary/obj/",
+        "outputPath": "/home/nathanielworrel/Documents/FishyInvesting/FishyInvesting/FishyInvesting/FishyLibrary/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/nathanielworrel/.nuget/NuGet/NuGet.Config"
@@ -237,6 +253,10 @@
               "target": "Package",
               "version": "[10.0.0, )"
             },
+            "EasyNetQ": {
+              "target": "Package",
+              "version": "[8.0.0-beta99, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[5.2.1, )"
@@ -277,6 +297,10 @@
               "target": "Package",
               "version": "[9.0.0, )"
             },
+            "Serilog.Enrichers.Span": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
             "Serilog.Sinks.Console": {
               "target": "Package",
               "version": "[6.0.0, )"
@@ -284,6 +308,10 @@
             "Serilog.Sinks.Seq": {
               "target": "Package",
               "version": "[9.0.0, )"
+            },
+            "SerilogTracing": {
+              "target": "Package",
+              "version": "[2.3.1, )"
             },
             "YahooFinanceApi": {
               "target": "Package",

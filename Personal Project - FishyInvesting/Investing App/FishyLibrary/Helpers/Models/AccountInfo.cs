@@ -59,9 +59,7 @@ public class AccountInfo
         {
             return 0;
         }
-        else
-        {
-            return Balance.CashBalance;
-        }
+
+        return Balance.CashBalance;
     }
 }

@@ -66,4 +66,26 @@ public class EarningService: IEarningService
 
         return totalProfits;
     }
+
+    public List<Return> ConsolidateReturns(List<List<Return>> returns)
+    {
+        int length = returns[0].Count;
+        List<Return> finalReturns = new List<Return>();
+        
+        for (int i = 0; i < length; i++)
+        {
+            decimal sumStrategyValues = returns.Sum(innerList => innerList[i].Value);
+            decimal weightedSumStrategyValues = returns.Sum(innerList => innerList[i].Value * innerList[i].Returns);
+            if (sumStrategyValues == 0)
+            {
+                finalReturns.Add(new Return(returns[0][i].Date, 1, sumStrategyValues));
+            }
+            else
+            {
+                finalReturns.Add(new Return(returns[0][i].Date, weightedSumStrategyValues / sumStrategyValues, sumStrategyValues));
+            }
+        }
+        
+        return finalReturns;
+    }
 }

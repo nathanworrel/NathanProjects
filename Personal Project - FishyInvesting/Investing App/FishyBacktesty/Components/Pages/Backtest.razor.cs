@@ -134,7 +134,10 @@ public partial class Backtest : ComponentBase
         TimeOfDay = new TimeSpan(0,9,40,0);
         StartDate = new DateTime(2000, 1, 1);
         Strategies.Add(new MacdStrategy());
+        Strategies.Add(new SlmcStrategy());
         Strategies.Add(new ExponentialMAStrategy());
+        Strategies.Add(new BollingerStrategy());
+        Strategies.Add(new VIXMACDStrategy());
         _selectedStrategy = Strategies.First();
         ChartOptions = new ChartOptions();
         ChartOptions.YAxisTicks = 1;

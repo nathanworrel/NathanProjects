@@ -2,5 +2,5 @@ namespace FishyLibrary.Models.Account;
 
 public class AccountGet : AccountBase
 {
-    public int UserId { get; set; }
+    public int ClientId { get; set; }
 }

@@ -16,10 +16,10 @@ public class DataRequestService
         bool adjustForDividends = true, bool adjustForSplits = true, int startOfDayAdjustmentInMinutes = 0,
         int endOfDayAdjustmentInMinutes = 0, int numberOfMostRecentBars = 0, bool disableCache = true)
     {
-        var requestUri = "";//Removed
+        var requestUri = ;
 
         var req = new HttpRequestMessage(HttpMethod.Get, requestUri);
-        //removed something here
+        req.Headers.Add("", "");
         using var client = new HttpClient();
         return await client.SendAsync(req);
     }
@@ -42,7 +42,7 @@ public class DataRequestService
 
             stockDataList.Add(stockData);
         }
-        _logger.LogInformation($"Parsed {stockDataList.Count} stock data");
+        _logger.LogInformation("Parsed {stockDataList.Count} stock data", stockDataList.Count);
 
         return stockDataList;
     }

@@ -39,12 +39,14 @@ public class StrategyServiceService : IStrategyServiceService
     public void StrategyRun(int strategyId, TimeSpan runTime)
     {
         _strategyInfo = _strategyServiceContext.Strategies.FirstOrDefault(x => x.Id == strategyId);
+        _logger.LogDebug("Strategy Info: {strategyInfo}", _strategyInfo);
         if (_strategyInfo == null)
         {
             throw new Exception($"Can't find strategy with id: {strategyId}");
         }
 
         _account = _strategyServiceContext.Accounts.FirstOrDefault(x => x.Id == _strategyInfo.AccountId);
+        _logger.LogDebug("Account Info: {accountInfo}", _account);
         if (_account == null)
         {
             throw new Exception($"Can't find account with id: {_strategyInfo.AccountId}");
@@ -52,6 +54,7 @@ public class StrategyServiceService : IStrategyServiceService
 
         Parameters? parameters =
             _strategyServiceContext.Parameters.FirstOrDefault(x => x.Id == _strategyInfo.ParameterId);
+        _logger.LogDebug("Parameters Info: {parameters}", parameters);
         if (parameters == null)
         {
             throw new Exception($"Can't find parameter with id: {_strategyInfo.ParameterId}");
@@ -59,6 +62,7 @@ public class StrategyServiceService : IStrategyServiceService
 
         StrategyType? strategyType =
             _strategyServiceContext.StrategyTypes.FirstOrDefault(x => x.Id == parameters.StrategyTypeId);
+        _logger.LogDebug("Strategy Type: {strategyType}", strategyType);
         if (strategyType == null)
         {
             throw new Exception($"Can't find strategy type with id: {parameters.StrategyTypeId}");
@@ -75,6 +79,7 @@ public class StrategyServiceService : IStrategyServiceService
             _strategyInfo.Product
         ];
         products.AddRange(secondaryProducts);
+        _logger.LogDebug("Products Info: {products}", products);
 
         _strategy = _strategyHelperService.GetStrategy(strategyType.Name);
 
@@ -91,11 +96,11 @@ public class StrategyServiceService : IStrategyServiceService
 
         for (var i = 0; i < products.Count; i++)
         {
-            _logger.LogInformation($"Product {i + 1}: {products[i]} and price : {prices[i]}");
+            _logger.LogInformation("Product {num}: {productOfNum} and price : {pricesOfNum}", i + 1, products[i], prices[i]);
         }
 
         double signal = _strategy.GenerateSignal(prices);
-        _logger.LogInformation($"Signal: {signal} for strategy {_strategyInfo.Id}");
+        _logger.LogInformation("Signal: {signal} for strategy {strategyId}", signal, _strategyInfo.Id);
 
         _makeTradeRetriever.Trade(signal, prices[0], _strategyInfo.Id, _strategyInfo.Dry);
 
@@ -123,7 +128,8 @@ public class StrategyServiceService : IStrategyServiceService
             return;
         }
 
-        _logger.LogInformation($"Updating Strategy {_strategyInfo.Id} with {prices[0].Count} days of information from {prices.Count} sources");
+        _logger.LogInformation("Updating Strategy {strategyId} with {numPrices} days of information " +
+                               "from {numPriceSources} sources", _strategyInfo.Id, prices[0].Count, prices.Count);
         
         for (int i = 0; i < prices[0].Count; i++)
         {

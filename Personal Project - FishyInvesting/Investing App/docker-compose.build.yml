@@ -1,0 +1,54 @@
+services:
+  notifications:
+    image: notifications
+    build:
+      context: .
+      dockerfile: Svc.Notifications/Dockerfile
+  
+  charles-schwab:
+    image: charles-schwab
+    build:
+      context: .
+      dockerfile: WebApi.Brokers.CharlesSchwab/Dockerfile
+  
+  make-trade:
+    image: make-trade
+    build:
+      context: .
+      dockerfile: WebApi.MakeTrade/Dockerfile
+
+  get-data:
+    image: get-data
+    build:
+      context: .
+      dockerfile: WebApi.GetData/Dockerfile
+  
+  strategy-service:
+    image: strategy-service
+    build:
+      context: .
+      dockerfile: WebApi.StrategyService/Dockerfile
+  
+  scheduler:
+    image: scheduler
+    build:
+      context: .
+      dockerfile: WebApi.Scheduler/Dockerfile
+  
+  update-trades:
+    image: update-trades
+    build:
+      context: .
+      dockerfile: WebApi.UpdateTrades/Dockerfile
+  
+  strategy-runner:
+    image: strategy-runner
+    build:
+      context: .
+      dockerfile: Svc.StrategyRunner/Dockerfile
+  
+  db-access:
+    image: db-access
+    build:
+      context: .
+      dockerfile: WebApi.DB.Access/Dockerfile

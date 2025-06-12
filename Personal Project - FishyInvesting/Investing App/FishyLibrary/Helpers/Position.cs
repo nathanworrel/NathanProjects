@@ -1,70 +1,50 @@
 using FishyLibrary.Models;
-using FishyLibrary.Models.Earning;
 using FishyLibrary.Models.Trade;
 
 namespace FishyLibrary.Helpers;
 
 public class Position
 {
-    record IntervalBuy(decimal ChangeInAllocation, decimal Price);
-    public decimal CurrentAllocation { get; private set; }
-    private decimal LastPrice { get; set; }
-    private Queue<IntervalBuy> IntervalBuys { get; set; }
     private decimal IntervalReturns { get; set; }
+    private int NumStocksHolding { get; set; }
+    private decimal AverageBuyPrice { get; set; }
+    public decimal CurrentAllocation { get; set; }
+    private decimal TotalProfits { get; set; }
     
     public Position()
     {
-        CurrentAllocation = 0;
-        LastPrice = 0;
-        IntervalBuys = new Queue<IntervalBuy>();
-        Reset();
+        TotalProfits = 0;
+        Reset(0);
     }
 
     public Position(StockData stockData)
     {
-        CurrentAllocation = 0;
-        LastPrice = stockData.Price;
-        IntervalBuys = new Queue<IntervalBuy>();
-        Reset();
+        TotalProfits = 0;
+        Reset(stockData.Price);
     }
     
+    /*
+     * Adds a trade to the interval. Calculates the percentage change using buy and sell price
+     * and updates whether in the market or not.
+     */
     public void AddTradeInInterval(Trade trade)
     {            
         if ((Side)trade.Side == Side.SELL)
         {
-            decimal percentageSum = 0;
             decimal changeInAllocation = CurrentAllocation - trade.DesiredAllocation;
-            
-            while (percentageSum < changeInAllocation && IntervalBuys.Count > 0)
-            {
-                var buy = IntervalBuys.Dequeue();
-                if (percentageSum + buy.ChangeInAllocation > changeInAllocation)
-                {
-                    var remainingAllocation = percentageSum + buy.ChangeInAllocation - trade.DesiredAllocation;
-                    IntervalReturns *= CalculatePercentageChange(buy.Price, trade.PriceFilled, buy.ChangeInAllocation - remainingAllocation);
-                    IntervalBuys.Enqueue( buy with { ChangeInAllocation = remainingAllocation });
-                    percentageSum = trade.DesiredAllocation;
-                }
-                else
-                {
-                    percentageSum += buy.ChangeInAllocation;
-                    IntervalReturns *= GenerateReturnsForIntervalBuy(buy, trade.PriceFilled);
-                }
-            }
-
-            if (percentageSum < changeInAllocation)
-            {
-                IntervalReturns *= CalculatePercentageChange(LastPrice, trade.PriceFilled, changeInAllocation);
-            }
+            int intervalStocksUsed = trade.QuantityFilled;
+            UpdateProfits(AverageBuyPrice, trade.PriceFilled, intervalStocksUsed);
+            IntervalReturns *= CalculatePercentageChange(AverageBuyPrice, trade.PriceFilled, 
+                changeInAllocation);
+            NumStocksHolding -= intervalStocksUsed;
         }
         else
         {
-            if (CurrentAllocation > trade.DesiredAllocation)
-            {
-                throw new Exception("Allocation Amount Incorrect");
-            }
-            IntervalBuys.Enqueue(new IntervalBuy(trade.DesiredAllocation - CurrentAllocation, trade.PriceFilled));
+            AverageBuyPrice = (AverageBuyPrice * NumStocksHolding + trade.PriceFilled * trade.QuantityFilled) /
+                                      (NumStocksHolding +  trade.QuantityFilled);
+            NumStocksHolding += trade.QuantityFilled;
         }
+
         CurrentAllocation = trade.DesiredAllocation;
     }
 
@@ -87,25 +67,22 @@ public class Position
      */
     public Return IncreaseInterval(StockData stockData)
     {
-        // Generate returns for the buys in this interval without 
-        foreach (var intervalBuy in IntervalBuys)
-        {
-            IntervalReturns *= GenerateReturnsForIntervalBuy(intervalBuy, stockData.Price);
-        }
-        var finalReturns = GenerateFinalReturns(stockData.Price);
-        var result = new Return(stockData.Time, IntervalReturns * finalReturns);
-        LastPrice = stockData.Price;
-        Reset();
+        // Generate returns for stocks currently held
+        IntervalReturns *= CalculatePercentageChange(AverageBuyPrice, stockData.Price, CurrentAllocation);
+        
+        // Generate Result
+        var result = new Return(stockData.Time, IntervalReturns, stockData.Price * NumStocksHolding + TotalProfits);
+        Reset(stockData.Price);
         return result;
     }
 
     /*
      * Resets the variables for an interval
      */
-    private void Reset()
+    private void Reset(decimal buyPrice)
     {
         IntervalReturns = 1;
-        IntervalBuys.Clear();
+        AverageBuyPrice = buyPrice;
     }
 
     /*
@@ -118,22 +95,18 @@ public class Position
      */
     private decimal CalculatePercentageChange(decimal originalPrice, decimal endingPrice, decimal percentage)
     {
-        return (percentage * (endingPrice - originalPrice) / originalPrice) + 1;
+        if (originalPrice != 0)
+        {
+            return (percentage * (endingPrice - originalPrice) / originalPrice) + 1;
+        }
+        else
+        {
+            return 1;
+        }
     }
 
-    private decimal GenerateReturnsForIntervalBuy(IntervalBuy buy, decimal sellPrice)
+    private void UpdateProfits(decimal buyPrice, decimal sellPrice, int quantity)
     {
-        return CalculatePercentageChange(buy.Price, sellPrice, buy.ChangeInAllocation);
-    }
-    
-    private decimal GenerateFinalReturns(decimal currPrice)
-    {
-        decimal changeInAllocation = IntervalBuys.ToList().Sum(b => b.ChangeInAllocation);
-        if (CurrentAllocation != changeInAllocation)
-        {
-            return CalculatePercentageChange(LastPrice, currPrice, CurrentAllocation - changeInAllocation);
-        }
-    
-        return 1;
+        TotalProfits += (sellPrice - buyPrice) * quantity;
     }
 }

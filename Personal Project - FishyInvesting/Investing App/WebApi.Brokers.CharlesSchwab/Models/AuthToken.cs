@@ -4,7 +4,7 @@ namespace WebApi.Template.Models;
 
 public class AuthToken {
     public int Id { get; set; }
-    public int UserId { get; set; }
+    public int ClientId { get; set; }
     public string AccessToken { get; set; }
     public DateTime AccessTokenExpiration { get; set; }
     public string RefreshToken { get; set; }
@@ -13,10 +13,10 @@ public class AuthToken {
     public string AppKey { get; set; }
     public string AppSecret { get; set; }
 
-    public AuthToken(int userId, string accessToken, DateTime accessTokenExpiration, string refreshToken,
+    public AuthToken(int clientId, string accessToken, DateTime accessTokenExpiration, string refreshToken,
         DateTime refreshTokenExpiration, string authorizationCode, string appKey, string appSecret)
     {
-        UserId = userId;
+        ClientId = clientId;
         AccessToken = accessToken;
         AccessTokenExpiration = accessTokenExpiration;
         RefreshToken = refreshToken;
@@ -29,6 +29,6 @@ public class AuthToken {
 
 public class AccountResponse
 {
-    public string AccountNumber { get; set; }
-    public string HashValue { get; set; }
+    public string accountNumber { get; set; }
+    public string hashValue { get; set; }
 }

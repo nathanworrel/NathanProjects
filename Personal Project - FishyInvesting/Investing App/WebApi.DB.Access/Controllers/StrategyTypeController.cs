@@ -23,7 +23,7 @@ public class StrategyTypeController : ControllerBase
     [HttpGet]
     public ActionResult<StrategyTypeGet?> Get(int id)
     {
-        _logger.LogInformation($"Get Strategy Type with id {id}");
+        _logger.LogInformation("Get Strategy Type with id {id}", id);
         StrategyTypeGet? strategyType = _service.GetById(id);
         if (strategyType == null)
         {
@@ -36,7 +36,7 @@ public class StrategyTypeController : ControllerBase
     [HttpGet("all")]
     public ActionResult<List<StrategyTypeGet>> Get()
     {
-        _logger.LogInformation($"Get all strategy types");
+        _logger.LogInformation("Get all strategy types");
         return _service.GetAll();
     }
 }

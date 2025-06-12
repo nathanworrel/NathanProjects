@@ -1,5 +1,7 @@
+using FishyLibrary.Helpers;
 using FishyLibrary.Models;
 using FishyLibrary.Models.MarketTime;
+using FishyLibrary.Models.Order;
 using WebApi.Template.Models;
 
 namespace WebApi.Template.Services;
@@ -7,14 +9,13 @@ namespace WebApi.Template.Services;
 public interface ICharlesSchwabService
 {
     string? AutomaticSignIn(int userId);
-    Task<HttpResponseMessage> SendMakeTrade(Order order,  int accountId);
-    Task<HttpResponseMessage> VerifySendMakeTrade(Order order,  int accountId);
-    Task<HttpResponseMessage> GetCurrentMarketPrice(int accountId, string product);
-    Task<HttpResponseMessage> GetAccountData(int accountId);
+    GenericResponse PlaceTrade(FishyLibrary.Helpers.MakeTrade makeTrade, int accountId, bool dry);
+    double GetCurrentMarketPrice(int accountId, string product);
+    AccountInfo GetAccountData(int accountId);
     
-    Task<MarketTime> GetMarketTime(int accountId);
+    MarketTime GetMarketTime(int accountId);
     string? ManualSignIn(int userId);
     void EveryoneSignIn();
-    Task<HttpResponseMessage> GetOrders(int accountId, DateTime startDate);
-    Task<HttpResponseMessage> GetOrder(int accountId, string orderNumber);
+    List<OrderData> GetOrders(int accountId, string startTime);
+    OrderData GetOrder(int accountId, string orderNumber);
 }

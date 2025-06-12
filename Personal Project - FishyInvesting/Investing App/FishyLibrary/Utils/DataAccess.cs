@@ -20,22 +20,28 @@ public class DataAccess
         {
             host = "localhost";
             port = 1;
-            database = "dev-fishydb";
+            database = "dev-1";
         }
         else if (environment == "Production")
         {
             host = "db";
             port = 1;
-            database = "fishydb";
+            database = "1";
+        }
+        else if (environment == "Staging")
+        {
+            host = "127.0.0.1";
+            port = 4001;
+            database = "1";
         }
         else
         {
             host = "localhost";
-            port = 1;
-            database = "test-fishydb";
+            port = 4321;
+            database = "test-1";
         }
 
-        return $"Host={host};Port={port};Database={database};User Id=1;Password=1;";
+        return $"Host={host};Port={port};Database={database};User Id=postgres;Password=1;";
     }
     
     private static string FormatInsertValues(List<string> values)

@@ -1,4 +1,4 @@
-@WebApi.UpdateTrades_HostAddress = http://localhost:5258
+@WebApi.UpdateTrades_HostAddress = http://localhost:1
 
 GET {{WebApi.UpdateTrades_HostAddress}}/weatherforecast/
 Accept: application/json

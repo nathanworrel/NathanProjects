@@ -42,7 +42,7 @@ public class GetDataService : IGetDataService
             _stockDataIntoDatabase.InsertAllData(subset);
         }
 
-        _logger.LogInformation($"Stored data for {product}: {count}");
+        _logger.LogInformation("Stored data for {product}: {count}", product, count);
     }
 
     private StockData? GetRecentDataFromDatabase(string product)

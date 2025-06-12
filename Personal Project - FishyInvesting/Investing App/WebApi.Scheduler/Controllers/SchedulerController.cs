@@ -19,7 +19,7 @@ public class SchedulerController : ControllerBase
     [HttpPost("start")]
     public IActionResult Scheduler(string runTime = "09:50:00")
     {
-        _logger.LogInformation($"Scheduler started at {runTime}");
+        _logger.LogInformation("Scheduler started at {runTime}", runTime);
         try
         {
             _schedulerService.StartScheduler(TimeSpan.Parse(runTime));

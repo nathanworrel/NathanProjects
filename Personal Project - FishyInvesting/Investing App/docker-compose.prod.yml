@@ -1,0 +1,191 @@
+services:
+  db:
+    image: postgres:16
+    container_name: db
+    user: postgres
+    restart: always
+    ports:
+      - "1:1"
+    environment:
+      POSTGRES_DB: 1
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+      POSTGRES_ROOT_PASSWORD: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./insert.sql:/docker-entrypoint-initdb.d/insert.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  logs:
+    image: datalust/seq:latest
+    container_name: logs
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y" #Accepts the Seq End User License Agreement
+    ports:
+      - "1:80" # Exposes the Seq web interface on port 1
+      - "1:1" # Exposes the Seq ingestion port on 1
+    volumes:
+      - seq_data:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "1:1" # Exposes the ingestion port on 1  
+      - "11:11" # Exposes the web interface on port 11
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+  
+  notifications:
+    image: 1-artifacts/notifications
+    container_name: notifications
+    restart: always
+    env_file:
+      - 'shared.env'
+  
+  charles-schwab:
+    image: 1-artifacts/charlesschwab
+    container_name: charlesschwab
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+      - "1:1"
+    env_file:
+      - 'shared.env'
+    environment:
+      - DISPLAY=:99  # Set the display for headless mode
+      - SELENIUM_HEADLESS=true  # Ensure Selenium runs in headless mode
+    volumes:
+      - /dev/shm:/dev/shm
+  
+  make-trade:
+    image: 1-artifacts/maketrade
+    container_name: maketrade
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+
+  get-data:
+    image: 1-artifacts/getdata
+    container_name: getdata
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  strategy-service:
+    image: 1-artifacts/strategyservice
+    container_name: strategyservice
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  scheduler:
+    image: 1-artifacts/scheduler
+    container_name: scheduler
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      strategy-service:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  update-trades:
+    image: 1-artifacts/updatetrades
+    container_name: updatetrades
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  strategy-runner:
+    image: 1-artifacts/strategyrunner
+    container_name: strategyrunner
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      scheduler:
+        condition: service_started
+      get-data:
+        condition: service_started
+      charles-schwab:
+        condition: service_started
+      update-trades:
+        condition: service_started
+    ports:
+      - "7042:1"
+    env_file:
+      - 'shared.env'
+  
+  db-access:
+    image: 1-artifacts/dbaccess
+    container_name: dbaccess
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "1:1"
+    env_file:
+      - 'shared.env'
+  
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    restart: always
+    volumes:
+      - ~/.docker/config.json:/config.json:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_CONFIG=/
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_SCHEDULE=0 */10 * * * *
+
+volumes:
+  postgres_data:
+  
+  seq_data:
+  
+  rabbitmq_data:

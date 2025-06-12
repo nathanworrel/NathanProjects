@@ -16,8 +16,10 @@
           "Selenium.WebDriver": "4.27.0",
           "Seq.Extensions.Logging": "8.0.0",
           "Serilog.AspNetCore": "9.0.0",
+          "Serilog.Enrichers.Span": "3.1.0",
           "Serilog.Sinks.Console": "6.0.0",
           "Serilog.Sinks.Seq": "9.0.0",
+          "SerilogTracing": "2.3.1",
           "Swashbuckle.AspNetCore": "6.4.0"
         },
         "runtime": {
@@ -860,6 +862,18 @@
           }
         }
       },
+      "Serilog.Enrichers.Span/3.1.0": {
+        "dependencies": {
+          "Serilog": "4.2.0",
+          "System.Diagnostics.DiagnosticSource": "9.0.0"
+        },
+        "runtime": {
+          "lib/net7.0/Serilog.Enrichers.Span.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.1.0.0"
+          }
+        }
+      },
       "Serilog.Extensions.Hosting/9.0.0": {
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0",
@@ -953,6 +967,17 @@
           "lib/net6.0/Serilog.Sinks.Seq.dll": {
             "assemblyVersion": "9.0.0.0",
             "fileVersion": "9.0.0.0"
+          }
+        }
+      },
+      "SerilogTracing/2.3.1": {
+        "dependencies": {
+          "Serilog": "4.2.0"
+        },
+        "runtime": {
+          "lib/net8.0/SerilogTracing.dll": {
+            "assemblyVersion": "2.3.1.0",
+            "fileVersion": "2.3.1.0"
           }
         }
       },
@@ -1188,8 +1213,10 @@
           "RichardSzalay.MockHttp": "7.0.0",
           "Seq.Extensions.Logging": "8.0.0",
           "Serilog.AspNetCore": "9.0.0",
+          "Serilog.Enrichers.Span": "3.1.0",
           "Serilog.Sinks.Console": "6.0.0",
           "Serilog.Sinks.Seq": "9.0.0",
+          "SerilogTracing": "2.3.1",
           "YahooFinanceApi": "2.3.3"
         },
         "runtime": {
@@ -1683,6 +1710,13 @@
       "path": "serilog.aspnetcore/9.0.0",
       "hashPath": "serilog.aspnetcore.9.0.0.nupkg.sha512"
     },
+    "Serilog.Enrichers.Span/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xNxy5FxIuLLusRHBpJwJ/YqVw5S7Dtbt79NUsPQxDtu4+CYG4kJgjLs9fjZhKPMjZQL8GZRewT8brap9h2r+Vw==",
+      "path": "serilog.enrichers.span/3.1.0",
+      "hashPath": "serilog.enrichers.span.3.1.0.nupkg.sha512"
+    },
     "Serilog.Extensions.Hosting/9.0.0": {
       "type": "package",
       "serviceable": true,
@@ -1738,6 +1772,13 @@
       "sha512": "sha512-aNU8A0K322q7+voPNmp1/qNPH+9QK8xvM1p72sMmCG0wGlshFzmtDW9QnVSoSYCj0MgQKcMOlgooovtBhRlNHw==",
       "path": "serilog.sinks.seq/9.0.0",
       "hashPath": "serilog.sinks.seq.9.0.0.nupkg.sha512"
+    },
+    "SerilogTracing/2.3.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tkl/Rm3kzdOAQ2uwMARw2vE7QftYij9Tjbplg1SuaB+h+YfkX0RQDAxKwnMEVBZbsbnst4JGfk3J66V1EDovPA==",
+      "path": "serilogtracing/2.3.1",
+      "hashPath": "serilogtracing.2.3.1.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/6.4.0": {
       "type": "package",

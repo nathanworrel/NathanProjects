@@ -19,7 +19,7 @@ public class StrategyServiceController : ControllerBase
     [HttpPut("StrategyRun")]
     public IActionResult StrategyRun(int strategyId, String runTime = "09:50:00")
     {
-        _logger.LogInformation($"Executing Strategy Run with id: {strategyId} and run time: {runTime}");
+        _logger.LogInformation("Executing Strategy Run with id: {strategyId} and run time: {runTime}", strategyId, runTime);
         try
         {
             _strategyServiceService.StrategyRun(strategyId, TimeSpan.Parse(runTime));

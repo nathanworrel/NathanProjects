@@ -7,7 +7,7 @@ using FishyLibrary.Models.StrategyRuntime;
 using FishyLibrary.Models.StrategySecondaryProduct;
 using FishyLibrary.Models.StrategyType;
 using FishyLibrary.Models.Trade;
-using FishyLibrary.Models.User;
+using FishyLibrary.Models.Client;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -15,7 +15,7 @@ namespace WebApi.DB.Access.Contexts;
 
 public class DBAccessContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<Client> Users { get; set; }
     public DbSet<StrategyType> StrategyTypes { get; set; }
     public DbSet<Parameters> Parameters { get; set; }
     public DbSet<Strategy> Strategies { get; set; }
@@ -99,9 +99,9 @@ public class DBAccessContext : DbContext
 
         modelBuilder
             .Entity<Account>()
-            .HasOne<User>(e => e.User)
+            .HasOne<Client>(e => e.Client)
             .WithMany(e => e.Accounts)
-            .HasForeignKey(e => e.UserId);
+            .HasForeignKey(e => e.ClientId);
         
         modelBuilder
             .Entity<Strategy>()

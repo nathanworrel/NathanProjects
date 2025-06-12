@@ -34,18 +34,20 @@ public class UpdateTradesService : IUpdateTradesService
 
         foreach (var trade in pendingTrades)
         {
-            
-            _logger.LogInformation($"Updating trade {trade.OrderNumber} for strategy {trade.StrategyId}");
+            _logger.LogDebug("{trade}", trade);
+            _logger.LogInformation("Updating trade {orderNumber} for strategy {strategyId}", trade.OrderNumber, trade.StrategyId);
             Strategy? strategy = _updateTradesContext.strategies.FirstOrDefault(s => s.Id == trade.StrategyId);
+            _logger.LogDebug("{strategy}", strategy);
             if (strategy == null)
             {
-                _logger.LogError($"No strategy found with id: {trade.StrategyId}");
+                _logger.LogError("No strategy found with id: {strategyId}", trade.StrategyId);
                 continue;
             }
             OrderData? order = _charlesSchwabRetriever.GetOrder(strategy.AccountId, trade.OrderNumber);
+            _logger.LogDebug("{order}", order);
             if (order == null)
             {
-                _logger.LogError($"No order found with id: {trade.OrderNumber}");
+                _logger.LogError("No order found with id: {orderNumber}", trade.OrderNumber);
                 continue;
             }
 
@@ -74,13 +76,15 @@ public class UpdateTradesService : IUpdateTradesService
             {
                 strategy.NumStocksHolding -= quantityChanged;
                 strategy.AmountAllocated += changeInMoney;
-                _logger.LogInformation($"Made {changeInMoney} from {trade.OrderNumber} for strategy {trade.StrategyId}");
+                _logger.LogInformation("Made {changeInMoney} from {orderNumber} for strategy {strategyId}", 
+                    changeInMoney, trade.OrderNumber, trade.StrategyId);
             }
             else
             {
                 strategy.NumStocksHolding += quantityChanged;
                 strategy.AmountAllocated -= changeInMoney;
-                _logger.LogInformation($"Cost {changeInMoney} from {trade.OrderNumber} for strategy {trade.StrategyId}");
+                _logger.LogInformation("Cost {changeInMoney} from {orderNumber} for strategy {strategyId}", 
+                    changeInMoney, trade.OrderNumber, trade.StrategyId);
             }
 
             trade.QuantityFilled = filled;
@@ -89,9 +93,10 @@ public class UpdateTradesService : IUpdateTradesService
             Enum.TryParse(order.Status, out TradeStatus status);
             trade.Status = (int)status;
             trade.TimeModified = DateTime.Now.ToUniversalTime();
+            _logger.LogDebug("{trade}", trade);
         }
 
         _updateTradesContext.SaveChanges();
-        _logger.LogInformation($"Updated trades");
+        _logger.LogInformation("Updated trades");
     }
 }

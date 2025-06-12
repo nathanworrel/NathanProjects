@@ -6,6 +6,7 @@ using FishyLibrary.Models.Parameters;
 using FishyLibrary.Models.Strategy;
 using FishyLibrary.Models.StrategySecondaryProduct;
 using FishyLibrary.Models.StrategyType;
+using FishyLibrary.Models.Client;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -31,15 +32,15 @@ public class StrategyServiceContext : DbContext
         {
             string host = "localhost";
             int port = 1;
-            string database = "dev-fishydb";
+            string database = "dev-1";
             if (_env != null && !_env.IsDevelopment())
             {
                 
                 host = "db";
                 port = 1;
-                database = "fishydb";
+                database = "1";
             }
-            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=1;Password=1;");
+            builder.UseNpgsql($"Host={host};Port={port};Database={database};User Id=postgres;Password=1;");
         }
     
         base.OnConfiguring(builder);
@@ -67,6 +68,13 @@ public class StrategyServiceContext : DbContext
             .HasConversion(
                 v => JsonConvert.SerializeObject(v), 
                 v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v));
+        
+        modelBuilder
+            .Entity<Account>()
+            .HasOne(x => x.Client)
+            .WithMany(x => x.Accounts)
+            .HasForeignKey(x => x.ClientId);
+        
         modelBuilder.ToSnakeCase();
     }
 }
